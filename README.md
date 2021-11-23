@@ -1,5 +1,5 @@
-# ReOpenSlayer
-Server emulator of MMORPG game `WindSlayer` also known as `WS1`.
+# PySlayer
+An single python server emulator of MMORPG game `WindSlayer` also known as `WS1`.
 
 # Requirements
 * Python >= 3.7
