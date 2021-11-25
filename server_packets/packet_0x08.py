@@ -4,7 +4,7 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 import random
 
 # Superman Packet
-def opcode_08():
+def opcode_08(map_file_code):
     csn = CSNSocket()
     payload = b"\x08"
     # 0x1 == PVP 서버와 연결이 끊어졌습니다. 인터넷 연결을 확인해 주세요.
@@ -14,7 +14,7 @@ def opcode_08():
     # 0x5 == 해킹툴을 사용하였습니다.\n이 정보는 누적기록되며,\n이로 인한 불이익을 당할 수 있습니다.
 
     payload += p8u(0)  # Must be >= 1
-    payload += p16u(401)  # Mapcode
+    payload += p16u(map_file_code)  # Mapcode
     x = random.randint(1, 65535)
     y = random.randint(1, 255)
     payload += p32u(0)  # var_x

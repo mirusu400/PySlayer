@@ -4,28 +4,27 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 import random
 
 # Ingame Init packet
-def opcode_07():
+def opcode_04():
     csn = CSNSocket()
-    payload = b"\x07"  # opcode 7
+    payload = b"\x04"  # opcode 7
     payload += p8u(1)  # Must be >= 1
-    payload += pstr("미루나무", 17)
+    payload += pstr("mirusu400", 17)
     payload += p32u(2)  # Must be 2
     payload += p32u(3000)
     payload += p16u(1)  # If 1, send packet below:
 
     payload += p8u(4)
-    payload += pstr("나혼자산다", 17)
+    payload += pstr("Whatsthis", 17)
 
     # If >1, send packet below{str 16 16}:
     # If ==1, Bool
     # Guild info
     payload += p16u(2)
     payload += pstr("MyGuild", 17)
-    payload += p16u(0)
-    payload += p16u(0)
+    payload += p16u(4)
+    payload += p16u(5)
 
-    
-
+    payload += p8u(0)
     # if >= 4, send packet below:
     # {
     #   16 str
@@ -35,13 +34,6 @@ def opcode_07():
     #     16 16 16
     #   16
     # }
-    payload += p8u(4)
-    payload += p16u(1)
-    payload += pstr("내혼녀", 17)
-    payload += p16u(10)
-    payload += p16u(11)
-    payload += p16u(12)
-    payload += p16u(13)
 
     # payload += p16u(1)
     # payload += b"mirusu403012345\0" #partnername
@@ -53,10 +45,10 @@ def opcode_07():
 
     # === end if
 
-    payload += p8u(96)
-    payload += p8u(97)
+    payload += p8u(33)
+    payload += p8u(34)
+    payload += p8u(35)
     payload += p8u(98)  # Level
-    payload += p8u(99) 
 
     payload += p8u(1)  # Bool
 
@@ -69,10 +61,10 @@ def opcode_07():
     payload += p16u(28)  # 근성
 
     for i in range(0, 15):  # Skills?
-        payload += p16u(i)
+        payload += p16u(112+i)
 
         for j in range(0, 6):
-            payload += p16u(i)
+            payload += p16u(j*10+i)
     # line 1874
 
     for i in range(0, 10):
@@ -110,7 +102,7 @@ def opcode_07():
     payload += p8u(100)
     payload += p8u(99)
 
-    payload += p8u(1)  # Bool
+    payload += p8u(0)  # Bool
     payload += p8u(1)  # Bool
     payload += p8u(1)  # Bool
     payload += p8u(1)  # Bool
@@ -118,8 +110,8 @@ def opcode_07():
     payload += p8u(1)  # Bool
     payload += p8u(1)  # Bool
 
-    payload += p16u(13)
-    payload += p16u(14)
+    payload += p16u(400)
+    payload += p16u(410)
 
     payload += p32u(700)
     payload += p8u(30)
@@ -132,8 +124,8 @@ def opcode_07():
     payload += p8u(11)
     payload += p32u(600)
     payload += p8u(1)
-    payload += p16u(11)
-    payload += p16u(12)
+    payload += p16u(430)
+    payload += p16u(440)
 
     # for i in range(0,8000):
     #     payload += p8u(i % 0xFF)
