@@ -6,7 +6,7 @@ from server_packets.packet_0x02 import opcode_02
 from threading import Thread
 from lib import CSNSocket
 from server_packets import *
-
+from client_packets import *
 
 class Game_Server(Thread):
     def __init__(self, lock, tcp_port=7012):
@@ -69,23 +69,49 @@ class Game_Server(Thread):
             return -1
         csn = CSNSocket()
         csn.decrypt(data)
-        csn.printheader()
-        csn.printdata()
+        if csn.recv_opcode != 0xD:
+            csn.printheader()
+            csn.printdata()
         opcode = csn.recv_opcode
-        if opcode == 14:  # CreateCharacter
+        if opcode == 0xD: # MoveandSaveCharacter
+            result = parse_0D(csn.recv_decrypt_payload)
+        elif opcode == 14:  # CreateCharacter
             pass
         elif opcode == 22:  # AcceptQuest
             pass
         elif opcode == 43:  # EnterGame
             if self.send_start_packet == False:
-                csn = opcode_03()
+                csn = opcode_03(501)
                 self.conn.sendall(csn.build())
 
                 csn = opcode_07()
                 self.conn.sendall(csn.build())
+                
+                # csn = opcode_13()
+                # self.conn.sendall(csn.build())
+
+                # csn = opcode_14()
+                # self.conn.sendall(csn.build())
+
+
                 self.send_start_packet = True
+        elif opcode == 126:
+            # csn = opcode_03(401)
+            map_file_code = parse_7E(csn.recv_decrypt_payload)
+            csn = opcode_08(map_file_code)
+            self.conn.sendall(csn.build())
+
+            csn = opcode_07()
+            self.conn.sendall(csn.build())
         else:
             print("[-] Wrong Packet")
+    
+    def send_custom_opcode(self, data):
+        """
+        Send custom opcode
+        """
+        self.conn.sendall(data)
+        
 
     def stop(self):
         """
