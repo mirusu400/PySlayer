@@ -31,7 +31,7 @@ An single python server emulator of MMORPG game `WindSlayer` also known as `WS1`
 제가 작성한 소스코드 중 단 하나라도 윈드슬레이어 클라이언트 혹은 실제 서버 코드를 이용해 작성한 적이 없습니다. `XOR`키 또한 유저가 클라이언트에서 직접 추출하게 하므로, 저작권엔 아무 문제가 없습니다. 다만 이를 통해 상용 서버를 열고, 변조된 클라이언트를 배포하게 된다면 저작권에 저촉될 가능성이 존재합니다. 이에 대한 불이익 및 처벌에 대하여 저는 아무런 책임을 지지 않습니다.
 
 # About License
-현재 이 프로젝트는 `GNU License`를 따르고 있습니다. 제 소스코드를 수정할 경우 이를 공개할 의무가 있습니다. 제 프로젝트에 대한 Contribute는 언제나 환영합니다.
+현재 이 프로젝트는 `GPL License`를 따르고 있습니다. 제 소스코드를 수정할 경우 이를 공개할 의무가 있습니다. 제 프로젝트에 대한 Contribute는 언제나 환영합니다.
 
 # Special Thanks
 * Riuga for help reversing `CSNsocket` and build some server-side packets.
