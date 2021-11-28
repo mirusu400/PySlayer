@@ -20,6 +20,6 @@ for i in range(0x00, 0xFF):
 # Load app functions into __all__
 __all__ = [
     'opcode_01', 'opcode_02', 'opcode_03', 'opcode_04', 'opcode_07', 'opcode_08',
-    'opcode_13', 'opcode_14', 'opcode_A5', 'opcode_2F',
-    'opcode_18', 'opcode_26', 'opcode_59', 'opcode_28'
+    'opcode_13', 'opcode_14', 'opcode_A5', 'opcode_2F', 'opcode_19',
+    'opcode_18', 'opcode_26', 'opcode_59', 'opcode_28', 'opcode_51', 'opcode_29'
 ]
