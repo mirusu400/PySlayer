@@ -57,8 +57,9 @@ def main_loop():
                 time.sleep(0.1)
             game_server.start()
             print("Resetting server... Done!")
-        elif cmd == "18":
-            game_server.send_custom_opcode("18")
+        else:
+            game_server.send_custom_opcode(cmd)
+
 
     channel_server.join()
     game_server.join()
