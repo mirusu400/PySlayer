@@ -81,12 +81,20 @@ class Game_Server(Thread):
             pass
         elif opcode == 43:  # EnterGame
             if self.send_start_packet == False:
-                csn = opcode_03(501)
+                csn = opcode_03(401)
                 self.conn.sendall(csn.build())
 
                 csn = opcode_07()
                 self.conn.sendall(csn.build())
                 
+                # for i in range(0, 0xFF):
+                #     csn = opcode_59(i)
+                #     self.conn.sendall(csn.build())
+                
+                # for i in [80, 82, 84, 86, 88, 90, 94, 0x15B]:
+                for i in range(80, 0xFFFF):
+                    csn = opcode_18(i)
+                    self.conn.sendall(csn.build())
                 # csn = opcode_13()
                 # self.conn.sendall(csn.build())
 
@@ -103,6 +111,10 @@ class Game_Server(Thread):
 
             csn = opcode_07()
             self.conn.sendall(csn.build())
+
+            for i in [80, 82, 84, 86, 88, 90, 94, 0x15B]:
+                csn = opcode_18(i)
+                self.conn.sendall(csn.build())
         else:
             print("[-] Wrong Packet")
     
@@ -110,7 +122,14 @@ class Game_Server(Thread):
         """
         Send custom opcode
         """
-        self.conn.sendall(data)
+        csn = None
+        if data == "18":
+            item = int(input("item code?"), 16)
+            csn = opcode_18(item)
+        elif data == "28":
+            item = int(input("code?"), 16)
+            csn = opcode_28(item)
+        self.conn.sendall(csn.build())
         
 
     def stop(self):
