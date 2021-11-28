@@ -54,14 +54,16 @@ def opcode_07():
         # payload += p16u(0)
 
         # === end if
-
+        # 4 == 도적 ( 2 == 트랩퍼)
+        # 5 == 마법사
+        # 6 == 사제
         payload += p8u(4) # Skillset
-        payload += p8u(30) # Job Name
+        payload += p8u(2) # Job Name
         # payload += p16u(12)
         payload += p8u(98)  # Level
         payload += p8u(20) # 계급
 
-        payload += p8u(0)  # 성별?
+        payload += p8u(30)  # 성별?
 
         for i in range(0, 17):  # 외형
             payload += p16u(110+i)
@@ -72,7 +74,7 @@ def opcode_07():
         payload += p16u(999)  # 근성
 
         for i in range(0, 15):  # Equip
-            payload += p16u(i+120)
+            payload += p16u(0x100)
             # payload += p16u(10)
             for j in range(0, 6): # Equip enchant
                 payload += p16u(0)
@@ -91,24 +93,24 @@ def opcode_07():
         # lots of loop(64), but i dont knwo why
         # for i in range(0x40):
         for i in range(200):
-            payload += p16u((i) & 0xFFFF)
-            payload += p32u((i) & 0xFFFFFFFF)
+            payload += p16u((i+10) % 0xDF) #Hp, Mp inside
+            payload += p16u((i+10) % 0xDF) # Hp, Mp inside
         x = random.randint(1000,100000) / 100
         y = random.randint(100,1000) / 100
         # print(x, y)
 
-        payload += p8u(255)
+        payload += p8u(0)
 
-        payload += pf64(x)
-        payload += pf64(y)
+        payload += pf64(10000)
+        payload += pf64(10000)
 
         payload += p32u(32)
         payload += p8u(1)  # Bool
-        payload += p8u(255)
+        payload += p8u(0)
 
         payload += p32u(501)
         payload += p32u(502)
-        payload += p8u(255)
+        payload += p8u(0)
         payload += p32u(503)
 
         payload += p8u(102)
@@ -116,13 +118,13 @@ def opcode_07():
         payload += p8u(100)
         payload += p8u(99)
 
-        payload += p8u(1)  # Bool
-        payload += p8u(1)  # Bool
-        payload += p8u(1)  # Bool
-        payload += p8u(1)  # Bool
-        payload += p8u(1)  # Bool
-        payload += p8u(1)  # Bool
-        payload += p8u(1)  # Bool
+        payload += p8u(16)  # Bool
+        payload += p8u(16)  # Bool
+        payload += p8u(16)  # Bool
+        payload += p8u(16)  # Bool
+        payload += p8u(16)  # Bool
+        payload += p8u(16)  # Bool
+        payload += p8u(16)  # Bool
 
         payload += p16u(15)
         payload += p16u(16)
@@ -133,7 +135,7 @@ def opcode_07():
         # these packets are send on else method..
         payload += p8u(1) # bool
         payload += p8u(113)
-        payload += pstr("123456", 13)  # 13 bytes
+        payload += pstr("123456789", 13)  # 13 bytes
         payload += p8u(12)
         payload += p8u(11)
         payload += p32u(800)

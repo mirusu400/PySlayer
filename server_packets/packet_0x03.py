@@ -37,9 +37,9 @@ def opcode_03(mapcode):
     for i in range(0, 5):
         payload += p8u(10+i)
 
-    payload += p8u(15)  # 장비칸 개수
-    payload += p8u(30)  # 소비칸 개수
-    payload += p8u(30)  # 기타칸 개수
+    payload += p8u(35)  # 장비칸 개수
+    payload += p8u(35)  # 소비칸 개수
+    payload += p8u(35)  # 기타칸 개수
 
     payload += p8u(15)  # End Quest?
 

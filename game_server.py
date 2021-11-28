@@ -81,7 +81,7 @@ class Game_Server(Thread):
             pass
         elif opcode == 43:  # EnterGame
             if self.send_start_packet == False:
-                csn = opcode_03(401)
+                csn = opcode_03(826)
                 self.conn.sendall(csn.build())
 
                 csn = opcode_07()
@@ -91,10 +91,12 @@ class Game_Server(Thread):
                 #     csn = opcode_59(i)
                 #     self.conn.sendall(csn.build())
                 
-                # for i in [80, 82, 84, 86, 88, 90, 94, 0x15B]:
-                for i in range(80, 0xFFFF):
-                    csn = opcode_18(i)
+                for i in [80, 82, 84, 86, 88, 90, 94, 0x15B]:
+                    csn = opcode_18(i, 1)
                     self.conn.sendall(csn.build())
+                # for i in range(80, 0xFFFF):
+                    # csn = opcode_18(i, 1)
+                    # self.conn.sendall(csn.build())
                 # csn = opcode_13()
                 # self.conn.sendall(csn.build())
 
@@ -103,6 +105,11 @@ class Game_Server(Thread):
 
 
                 self.send_start_packet = True
+        elif opcode == 11:  # GetItemOrSkill
+            item, count = parse_0B(csn.recv_decrypt_payload)
+            csn = opcode_18(item, count)
+            self.conn.sendall(csn.build())
+
         elif opcode == 126:
             # csn = opcode_03(401)
             map_file_code = parse_7E(csn.recv_decrypt_payload)
@@ -113,7 +120,7 @@ class Game_Server(Thread):
             self.conn.sendall(csn.build())
 
             for i in [80, 82, 84, 86, 88, 90, 94, 0x15B]:
-                csn = opcode_18(i)
+                csn = opcode_18(i, 1)
                 self.conn.sendall(csn.build())
         else:
             print("[-] Wrong Packet")
@@ -123,12 +130,34 @@ class Game_Server(Thread):
         Send custom opcode
         """
         csn = None
-        if data == "18":
-            item = int(input("item code?"), 16)
-            csn = opcode_18(item)
+        if data == "13":
+            csn = opcode_13()
+        elif data == "18" or data == "item":
+            item = int(input("item code?"))
+            count = int(input("count?"))
+            csn = opcode_18(item, count)
+        elif data == "map":
+            map = int(input("map code?"))
+            csn = opcode_08(map)
+            self.conn.sendall(csn.build())
+
+            csn = opcode_07()
+            self.conn.sendall(csn.build())
+            for i in [80, 82, 84, 86, 88, 90, 94, 0x15B]:
+                csn = opcode_18(i, 1)
+                self.conn.sendall(csn.build())
+
         elif data == "28":
-            item = int(input("code?"), 16)
+            item = int(input("code?"))
             csn = opcode_28(item)
+        elif data == "29":
+            csn = opcode_29()
+        elif data == "51":
+            item = int(input("code?"))
+            csn = opcode_51(item)
+        else:
+            print("[-] Undefined Opcode")
+            return
         self.conn.sendall(csn.build())
         
 
