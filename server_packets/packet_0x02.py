@@ -17,7 +17,7 @@ def opcode_02():
         payload += b"mirusu400012345\0"  # Size 17
         payload += p8u(0)  # Bool (Must be zero)
         payload += p8u(1)
-        payload += p16u(11)  # Job
+        payload += p16u(9)  # Job
         payload += p32u(987654)  # totalexp
         payload += p32u(665)
         payload += p32u(666)
@@ -28,11 +28,12 @@ def opcode_02():
         # payload += b"012345678901234\0" # size 16
 
         # for i in [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1]:
-        for i in [0, 0, 0, 0]:
+        # payload += pstr("\x01"*16,17)
+        for i in [0, 0, 0, 1]:
             payload += p8u(i)
         payload += p8u(0)  # Must be 0, if 1, character removed.
-        for i in [0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1]:
+        for i in [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1]:
             payload += p8u(i)
         for i in range(0, 17):  # About clothes
-            payload += p16u(112 + i)
+            payload += p16u(120 + i)
     return csn.inject_payload(payload)

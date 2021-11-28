@@ -3,10 +3,11 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 
 import random
 
-# 전장
-def opcode_A5():
+# About Item/skill
+def opcode_59(unk: int):
     csn = CSNSocket()
-    payload = b"\xA5"
-    payload += p16u(201)  # Mapcode
-    payload += p32u(1212) #??
+    payload = b"\x59"
+    a = random.randint(0, 50)
+    payload += p8(a) # v47 - 1 < 5
+    payload += p8u(unk)
     return csn.inject_payload(payload)

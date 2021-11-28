@@ -6,9 +6,11 @@ import random
 def opcode_03(mapcode):
     csn = CSNSocket()
     payload = b"\x03"
+    x = random.randint(65535, 210000000)
+    y = random.randint(1, 255)
     payload += p8u(1)  # Must be >= 1
     payload += p16u(mapcode)  # Mapcode
-    payload += p32u(15)
+    payload += p32u(x)
 
     payload += p64u(976431)  # gold
     payload += p32u(30000)
@@ -19,59 +21,54 @@ def opcode_03(mapcode):
     payload += p32u(7)  # 전장 KO
     payload += p32u(8)  # 전장 Down
 
-    payload += p8u(1)  # Bool
-    x = random.randint(1, 65535)
-    y = random.randint(1, 255)
+    payload += p8u(0)  # Bool
+    
+    print(x, y)
     payload += p32u(x)  # var_x
-    for i in range(0, 17):  # size 17 str
-        payload += p8u(i+10)
+    # for i in range(0, 17):  # size 17 str
+        # payload += p8u(i+10)
+    payload += pstr("미루나무", 17) # Mentor name
     payload += p8u(y)  # var_y
-    payload += p8u(13)
+    payload += p8u(10)
 
+    # 최대 진행가능 퀘스트 == 5?
     for i in range(0, 5):
         payload += p16u(10+i)  # quest?
     for i in range(0, 5):
-        payload += p8u(0)
+        payload += p8u(10+i)
 
-    payload += p8u(99)  # 장비칸 개수
-    payload += p8u(99)  # 장비칸 개수
-    payload += p8u(99)  # 소비칸 개수
+    payload += p8u(15)  # 장비칸 개수
+    payload += p8u(30)  # 소비칸 개수
+    payload += p8u(30)  # 기타칸 개수
 
-    payload += p8u(7)  # ??
+    payload += p8u(15)  # End Quest?
 
-    for i in range(0, 7):
-        payload += p16u(i+11)
-        payload += p8u(1)
+    for i in range(0, 15): # End Quest Count
+        payload += p16u(i) # Quest ID
+        payload += p8u(1) # 퀘스트 완료횟수
 
     # Equipment
-    payload += p8u(10)
-    for i in range(10):
-        payload += p16u(9)
-        payload += p8u(2)
-        for j in range(2):
-            payload += p16u(0)
+    payload += p8u(0)
+    for i in range(0):
+        payload += p16u(90+(i*2))
+        payload += p8u(5)
+        for j in range(5): #enchant
+            payload += p16u(j+10)
         payload += p16u(i+10)
-    # {
-    #   16
-    #   8 : { 16 }
-    #   16
-    # }
-    #
-    # Consume
-    payload += p8u(10)
-    for i in range(10):
-        payload += p16u(i+10)
+
+    payload += p8u(0)
+    for i in range(0):
+        payload += p16u(90+(i*2))
         payload += p16u(4)
-    # {
-    #   16 16
-    # }
-    payload += p8u(10)  # Other item list
-    for i in range(10):
-        payload += p16u(i)
+
+    payload += p8u(0)  # Other item list
+    for i in range(0):
+        payload += p16u(90+(i*2))
         payload += p8u(10)
+
     # { 16 8 }
 
     # Originally p32
-    # quests, items, etc..
-    payload += p32u(0xFFFFFFFF)
+    # Event time
+    payload += p32u(0)
     return csn.inject_payload(payload)
