@@ -10,5 +10,5 @@ def opcode_18(idx: int, count: int):
     payload += p64u(999999)  # Gold
     payload += p32u(99999)  # Winnie
     payload += p16u(idx)  # Item
-    payload += p16u(count)  # Count?
+    payload += p16(count)  # Count?
     return csn.inject_payload(payload)
