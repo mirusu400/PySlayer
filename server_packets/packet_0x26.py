@@ -5,8 +5,8 @@ import random
 
 # Supermode Packet
 def opcode_26():
-    csn = CSNSocket()
+
     payload = b"\x26"  # opcode 0x26
 
     payload += p16u(random.randint(0,255))  # ??
-    return csn.inject_payload(payload)
+    return payload

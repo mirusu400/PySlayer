@@ -5,8 +5,8 @@ import random
 
 # 전장
 def opcode_A5():
-    csn = CSNSocket()
+
     payload = b"\xA5"
     payload += p16u(201)  # Mapcode
     payload += p32u(1212) #??
-    return csn.inject_payload(payload)
+    return payload

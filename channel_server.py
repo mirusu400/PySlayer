@@ -25,7 +25,7 @@ class Channel_Server(Thread):
                                   socket.SOCK_STREAM)
         self.sock.bind(('127.0.0.1', self.tcp_port))
         self.sock.setblocking(0)
-        self.sock.settimeout(5)
+        self.sock.settimeout(1)
         time_reference = time.time()
         self.sock.listen(1)
 
@@ -34,12 +34,13 @@ class Channel_Server(Thread):
                 conn, addr = self.sock.accept()
             except socket.timeout:
                 continue
+            csnsocket = CSNSocket()
             time_reference = time.time()
             print(f"Channel server {time_reference}: {addr} connected.")
-            csn = opcode_01()
-            conn.sendall(csn.build())
+            payload = opcode_01()
+            conn.sendall(csnsocket.build(payload))
             conn.close()
-
+        print("[-] Channel server Closed")
         self.stop()
 
         

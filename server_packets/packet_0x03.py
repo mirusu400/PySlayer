@@ -3,8 +3,7 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 
 import random
 
-def opcode_03(mapcode):
-    csn = CSNSocket()
+def opcode_03(mapcode:int) -> bytes:
     payload = b"\x03"
     x = random.randint(65535, 210000000)
     y = random.randint(1, 255)
@@ -71,4 +70,4 @@ def opcode_03(mapcode):
     # Originally p32
     # Event time
     payload += p32u(0)
-    return csn.inject_payload(payload)
+    return payload

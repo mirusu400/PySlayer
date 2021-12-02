@@ -5,7 +5,7 @@ import random
 
 # ??
 def opcode_29():
-    csn = CSNSocket()
+
     payload = b"\x29"  # opcode 0x28
     r1 = random.randint(0, 0xFFFFFFFF)
     r2 = random.randint(0, 0xFFFFFFFF)
@@ -15,4 +15,4 @@ def opcode_29():
     payload += p32u(random.randint(0, r2))  # ??
     payload += p32u(random.randint(0, r3))  # ??
     
-    return csn.inject_payload(payload)
+    return payload

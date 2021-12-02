@@ -2,7 +2,7 @@ from lib import CSNSocket
 from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 
 def opcode_02():
-    csn = CSNSocket()
+
     payload = b"\x02"
     payload += p8u(1)  # Must be 1
     payload += p32u(2)
@@ -36,4 +36,4 @@ def opcode_02():
             payload += p8u(i)
         for i in range(0, 17):  # About clothes
             payload += p16u(120 + i)
-    return csn.inject_payload(payload)
+    return payload

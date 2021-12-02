@@ -5,7 +5,7 @@ import random
 
 # GetItem/skill
 def opcode_19(idx: int, count: int):
-    csn = CSNSocket()
+
     # 64 16 16
     # while(8) { 16 }
     # 16
@@ -17,4 +17,4 @@ def opcode_19(idx: int, count: int):
     for i in range(0):
         payload += p16u(random.randint(1, 10000))
     payload += p16(0)  # ??
-    return csn.inject_payload(payload)
+    return payload

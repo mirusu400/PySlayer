@@ -5,7 +5,7 @@ import random
 
 # Superman Packet
 def opcode_08(map_file_code):
-    csn = CSNSocket()
+
     payload = b"\x08"
     # 0x1 == PVP 서버와 연결이 끊어졌습니다. 인터넷 연결을 확인해 주세요.
     # 0x2 == 방장에의해 강퇴되었습니다.
@@ -19,4 +19,4 @@ def opcode_08(map_file_code):
     y = random.randint(1, 255)
     payload += p32u(0)  # var_x
     payload += p32u(0)  # 누적플탐
-    return csn.inject_payload(payload)
+    return payload

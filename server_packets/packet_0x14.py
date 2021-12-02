@@ -5,7 +5,7 @@ import random
 
 # Supermode Packet
 def opcode_14():
-    csn = CSNSocket()
+
     payload = b"\x14"  # opcode 0x14
     payload += p8u(1)  # Bool, 1
-    return csn.inject_payload(payload)
+    return payload

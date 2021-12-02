@@ -4,8 +4,7 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 import random
 
 # Ingame Init packet
-def opcode_07():
-    csn = CSNSocket()
+def opcode_07() -> bytes:
     payload = b"\x07"  # opcode 7
     v802 = 1
     payload += p8u(v802)  # Must be >= 1
@@ -57,8 +56,8 @@ def opcode_07():
         # 4 == 도적 ( 2 == 트랩퍼)
         # 5 == 마법사
         # 6 == 사제
-        payload += p8u(4) # Skillset
-        payload += p8u(2) # Job Name
+        payload += p8u(4) # 1차 전직
+        payload += p8u(1) # 2차 전직
         # payload += p16u(12)
         payload += p8u(98)  # Level
         payload += p8u(20) # 계급
@@ -89,10 +88,10 @@ def opcode_07():
             # payload += p16u(i+80)
 
         # line 1886
-        payload += p8u(1)
+        payload += p8u(0)
         # lots of loop(64), but i dont knwo why
         # for i in range(0x40):
-        for i in range(200):
+        for i in range(0):
             payload += p16u((i+10) % 0xDF) #Hp, Mp inside
             payload += p16u((i+10) % 0xDF) # Hp, Mp inside
         x = random.randint(1000,100000) / 100
@@ -101,16 +100,16 @@ def opcode_07():
 
         payload += p8u(0)
 
-        payload += pf64(10000)
-        payload += pf64(10000)
+        payload += pf64(100)
+        payload += pf64(500)
 
         payload += p32u(32)
-        payload += p8u(1)  # Bool
-        payload += p8u(0)
+        payload += p8u(0)  # Bool
+        payload += p8u(1)
 
         payload += p32u(501)
         payload += p32u(502)
-        payload += p8u(0)
+        payload += p8u(1)
         payload += p32u(503)
 
         payload += p8u(102)
@@ -118,16 +117,16 @@ def opcode_07():
         payload += p8u(100)
         payload += p8u(99)
 
-        payload += p8u(16)  # Bool
-        payload += p8u(16)  # Bool
-        payload += p8u(16)  # Bool
-        payload += p8u(16)  # Bool
-        payload += p8u(16)  # Bool
-        payload += p8u(16)  # Bool
-        payload += p8u(16)  # Bool
+        payload += p8u(0)  # Bool
+        payload += p8u(0)  # Bool
+        payload += p8u(0)  # Bool
+        payload += p8u(0)  # Bool
+        payload += p8u(0)  # Bool
+        payload += p8u(0)  # Bool
+        payload += p8u(0)  # Bool
 
-        payload += p16u(15)
-        payload += p16u(16)
+        payload += p16u(13443) # HP
+        payload += p16u(8899) # MP
 
         payload += p32u(700)
         payload += p8u(30)
@@ -145,4 +144,4 @@ def opcode_07():
 
         # for i in range(0,8000):
         #     payload += p8u(i % 0xFF)
-    return csn.inject_payload(payload)
+    return payload

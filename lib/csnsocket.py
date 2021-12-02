@@ -5,33 +5,40 @@ import binascii
 
 
 class CSNSocket:
-    def __new__(cls, *args, **kwargs):
-        if not hasattr(cls, "_instance"): 
-            print("CSNsocket::__new__ is called")
-            cls._instance = super().__new__(cls)
-        return cls._instance
-
     def __init__(self):
-        cls = type(self)
-        if not hasattr(cls, "_init"):
-            print("CSNsocket::__init__ is called")
+        self.send_packet_length = 0
+        self.send_seqnum = 0
+        self.send_opcode = 0
+        self.send_hash = 0
+        self.send_payload = None
 
-            # seqnum is just the order that packet is sent/receive.
-            self.send_packet_length = 0
-            self.send_seqnum = 0
-            self.send_opcode = 0
-            self.send_hash = 0
-            self.send_payload = None
+        self.recv_packet_length = 0
+        self.recv_seqnum = 0
+        self.recv_opcode = 0
+        self.recv_hash = 0
+        self.recv_payload = None
+        self.recv_decrypt_payload = None
+        # cls = type(self)
+        # if not hasattr(cls, "_init"):
+        #     print("CSNsocket::__init__ is called")
 
-            self.recv_packet_length = 0
-            self.recv_seqnum = 0
-            self.recv_opcode = 0
-            self.recv_hash = 0
-            self.recv_payload = None
-            self.recv_decrypt_payload = None
-        cls._init = True
+        #     # seqnum is just the order that packet is sent/receive.
+        #     self.send_packet_length = 0
+        #     self.send_seqnum = 0
+        #     self.send_opcode = 0
+        #     self.send_hash = 0
+        #     self.send_payload = None
 
-    def build(self):
+        #     self.recv_packet_length = 0
+        #     self.recv_seqnum = 0
+        #     self.recv_opcode = 0
+        #     self.recv_hash = 0
+        #     self.recv_payload = None
+        #     self.recv_decrypt_payload = None
+        # cls._init = True
+
+    def build(self, payload):
+        self.inject_payload(payload)
         p = b""
         p += p32(self.send_packet_length)
         p += p32(self.send_hash)  # hash
@@ -43,7 +50,7 @@ class CSNSocket:
         self.send_payload = payload
         self.send_packet_length = (
             ((len(payload) + 8) & 0x3FFF) | self.send_seqnum << 12)
-        return self
+        return payload
 
     def printheader(self):
         try:

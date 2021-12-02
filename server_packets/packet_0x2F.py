@@ -5,7 +5,7 @@ import random
 
 
 def opcode_2F():
-    csn = CSNSocket()
+
     payload = b"\x2F"
     payload += p8u(201)
     payload += p8u(201)
@@ -16,4 +16,4 @@ def opcode_2F():
     
     for i in range(9):
         payload += p8u(1)
-    return csn.inject_payload(payload)
+    return payload

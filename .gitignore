@@ -5,6 +5,13 @@ _key.py
 utils/ITM*
 utils/QST*
 utils/Map*
+utils/stage_parser.py
+test.cpp
+test.py
+doc/Packet_handler*
+doc/Full_Packet.c
+doc/WS1.hs
+doc/WS1.rs
 
 # Byte-compiled / optimized / DLL files
 _key1.py

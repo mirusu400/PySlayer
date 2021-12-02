@@ -5,7 +5,7 @@ import random
 
 # SetHp
 def opcode_51(idx: int):
-    csn = CSNSocket()
+
     payload = b"\x51"  # opcode 0x51
     payload += p16u(idx & 0xFFFF)  # Item
-    return csn.inject_payload(payload)
+    return payload
