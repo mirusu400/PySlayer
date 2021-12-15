@@ -63,10 +63,20 @@ class Game_Tcp_Handler():
             pass
         elif opcode == 43:  # EnterGame
             if self.send_start_packet == False:
-                payload = opcode_03(self.current_user_map)
+                self.db_cur.execute('SELECT * FROM characters WHERE "index"=1')
+                rows = self.db_cur.fetchall()[0]
+                self.db_cur.execute('SELECT * FROM chracterequip WHERE "index"=1')
+                equips = self.db_cur.fetchall()[0]
+                self.db_cur.execute('SELECT * FROM chracterapparence WHERE "index"=1')
+                apparences = self.db_cur.fetchall()[0]
+                print(rows)
+                (index, username, charactername, mapcode, job1, job2, _str, _dex, _int, _guts, _xpos, _ypos, level, hp, mp) = rows
+                
+                
+                payload = opcode_03(mapcode)
                 self.conn.sendall(csn.build(payload))
 
-                payload = opcode_07(100, 500, 0x100)
+                payload = opcode_07(rows, equips, apparences)
                 self.conn.sendall(csn.build(payload))
             
                 
@@ -92,13 +102,20 @@ class Game_Tcp_Handler():
             map_file_code, xpos, ypos = parse_7E(csn.recv_decrypt_payload, self.current_user_map, self.db_cur)
             print(f"[*] Current map: {self.current_user_map}\t Portal_code: {up32u(csn.recv_decrypt_payload[1:5])}\t")
             self.current_user_map = map_file_code
+            self.db_cur.execute('SELECT * FROM characters WHERE "index"=1')
+            rows = self.db_cur.fetchall()[0]
+            self.db_cur.execute('SELECT * FROM chracterequip WHERE "index"=1')
+            equips = self.db_cur.fetchall()[0]
+            self.db_cur.execute('SELECT * FROM chracterapparence WHERE "index"=1')
+            apparences = self.db_cur.fetchall()[0]
+
             payload = opcode_08(self.current_user_map)
             self.conn.sendall(csn.build(payload))
 
             # payload = opcode_05(xpos, ypos, 0x101)
             # self.conn.sendall(csn.build(payload))
 
-            payload = opcode_07(xpos, ypos, 0x101)
+            payload = opcode_07(rows, equips, apparences, xpos, ypos)
             self.conn.sendall(csn.build(payload))
 
             for i in [80, 82, 84, 86, 88, 90, 94, 0x15B]:
@@ -116,6 +133,7 @@ class Game_Server(Thread):
         Thread.__init__(self)
         self.lock = lock
         self.db_conn = db_conn
+        self.db_cur = self.db_conn.cursor()
         self.tcp_port = int(tcp_port)
         self.is_listening = True
         self.sock = None
@@ -171,11 +189,18 @@ class Game_Server(Thread):
             payload = opcode_18(item, count)
         elif data == "map":
             map = int(input("map code?"))
-            self.current_user_map = map
+            self.client_list[0].current_user_map = map
+            self.db_cur.execute('SELECT * FROM characters WHERE "index"=1')
+            rows = self.db_cur.fetchall()[0]
+            self.db_cur.execute('SELECT * FROM chracterequip WHERE "index"=1')
+            equips = self.db_cur.fetchall()[0]
+            self.db_cur.execute('SELECT * FROM chracterapparence WHERE "index"=1')
+            apparences = self.db_cur.fetchall()[0]
+            
             payload = opcode_08(map)
             self.client_list[0].conn.sendall(self.client_list[0].csn_socket.build(payload))
 
-            payload = opcode_07(100, 500)
+            payload = opcode_07(rows, equips, apparences)
             self.client_list[0].conn.sendall(self.client_list[0].csn_socket.build(payload))
             for i in [80, 82, 86, 88, 90, 94, 0x15B]:
                 payload = opcode_18(i, 1)

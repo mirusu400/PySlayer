@@ -1,15 +1,21 @@
 from lib import CSNSocket
 from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
-
+import sqlite3
 import random
 
 # Ingame Init packet
-def opcode_07(xpos, ypos, itemcode=100) -> bytes:
+def opcode_07(charinfos, equips, apparences, xpos=-1, ypos=-1) -> bytes:
     payload = b"\x07"  # opcode 7
+    (index, username, charactername, mapcode, job1, job2, _str, _dex, _int, _guts, _xpos, _ypos, level, hp, mp) = charinfos
+    if xpos == -1:xpos=_xpos
+    if ypos == -1:ypos=_ypos
+    equips = equips[1:]
+    apparences = apparences[1:]
+    print(apparences)
     v802 = 1
     payload += p8u(v802)  # Must be >= 1
     for i in range(v802):
-        payload += pstr("미루나무", 17)
+        payload += pstr(charactername, 17)
         payload += p32u(2)  # Must be 2
         payload += p32u(3000)
         payload += p16u(1)  # If 1, send packet below:
@@ -56,24 +62,24 @@ def opcode_07(xpos, ypos, itemcode=100) -> bytes:
         # 4 == 도적 ( 2 == 트랩퍼)
         # 5 == 마법사
         # 6 == 사제
-        payload += p8u(4) # 1차 전직
-        payload += p8u(1) # 2차 전직
+        payload += p8u(job1) # 1차 전직
+        payload += p8u(job2) # 2차 전직
         # payload += p16u(12)
-        payload += p8u(98)  # Level
+        payload += p8u(level)  # Level
         payload += p8u(20) # 계급
 
         payload += p8u(30)  # 성별?
 
-        for i in range(0, 17):  # 외형
-            payload += p16u(110+i)
+        for i in apparences:  # 외형 (loop 17)
+            payload += p16u(i)
 
-        payload += p16u(999)  # 힘
-        payload += p16u(999)  # 민첩
-        payload += p16u(999)  # 지혜
-        payload += p16u(999)  # 근성
+        payload += p16u(_str)  # 힘
+        payload += p16u(_dex)  # 민첩
+        payload += p16u(_int)  # 지혜
+        payload += p16u(_guts)  # 근성
 
-        for i in range(0, 15):  # Equip
-            payload += p16u(itemcode)
+        for i in equips:  # Equip (loop 15)
+            payload += p16u(i)
             # payload += p16u(10)
             for j in range(0, 6): # Equip enchant
                 payload += p16u(0)
@@ -125,8 +131,8 @@ def opcode_07(xpos, ypos, itemcode=100) -> bytes:
         payload += p8u(0)  # Bool
         payload += p8u(0)  # Bool
 
-        payload += p16u(13443) # HP
-        payload += p16u(8899) # MP
+        payload += p16u(hp) # HP
+        payload += p16u(mp) # MP
 
         payload += p32u(700)
         payload += p8u(30)
