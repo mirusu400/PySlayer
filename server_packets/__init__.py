@@ -21,5 +21,6 @@ for i in range(0x00, 0xFF):
 __all__ = [
     'opcode_01', 'opcode_02', 'opcode_03', 'opcode_04', 'opcode_07', 'opcode_08',
     'opcode_13', 'opcode_14', 'opcode_A5', 'opcode_2F', 'opcode_19',
-    'opcode_18', 'opcode_26', 'opcode_59', 'opcode_28', 'opcode_51', 'opcode_29'
+    'opcode_18', 'opcode_26', 'opcode_59', 'opcode_28', 'opcode_51', 'opcode_29',
+    'opcode_80', 'opcode_D7', 'opcode_AE', 'opcode_99', 'opcode_25', 'opcode_05'
 ]

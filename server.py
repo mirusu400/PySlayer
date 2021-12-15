@@ -10,8 +10,8 @@ if not os.path.isfile("./_key.py"):
 import argparse
 import socket
 import json
-
 import time
+import sqlite3
 from threading import Thread, Lock
 from channel_server import Channel_Server
 from game_server import Game_Server
@@ -23,8 +23,10 @@ def main_loop():
     Start udp tcp server threads
     """
     lock = Lock()
+    db_conn = sqlite3.connect("./db.sqlite3", check_same_thread=False)
     channel_server = Channel_Server(lock)
-    game_server = Game_Server(lock)
+    game_server = Game_Server(lock, db_conn)
+    
     channel_server.start()
     game_server.start()
     is_running = True
@@ -60,7 +62,7 @@ def main_loop():
         else:
             game_server.send_custom_opcode(cmd)
 
-
+    db_conn.close()
     channel_server.join()
     game_server.join()
 

@@ -4,10 +4,10 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 import random
 
 # Ingame Init packet
-def opcode_07(xpos, ypos, itemcode=100) -> bytes:
-    payload = b"\x07"  # opcode 7
+def opcode_05(xpos, ypos, itemcode=100) -> bytes:
+    payload = b"\x05"  # opcode 7
     v802 = 1
-    payload += p8u(v802)  # Must be >= 1
+    # payload += p8u(v802)  # Must be >= 1
     for i in range(v802):
         payload += pstr("미루나무", 17)
         payload += p32u(2)  # Must be 2
@@ -62,7 +62,7 @@ def opcode_07(xpos, ypos, itemcode=100) -> bytes:
         payload += p8u(98)  # Level
         payload += p8u(20) # 계급
 
-        payload += p8u(30)  # 성별?
+        payload += p8u(1)  # 성별?
 
         for i in range(0, 17):  # 외형
             payload += p16u(110+i)
@@ -135,12 +135,6 @@ def opcode_07(xpos, ypos, itemcode=100) -> bytes:
         payload += p8u(1) # bool
         payload += p8u(113)
         payload += pstr("123456789", 13)  # 13 bytes
-        payload += p8u(12)
-        payload += p8u(11)
-        payload += p32u(800)
-        payload += p8u(114)
-        payload += p16u(11)
-        payload += p16u(12)
 
         # for i in range(0,8000):
         #     payload += p8u(i % 0xFF)
