@@ -17,7 +17,12 @@ class Game_Tcp_Handler():
         self.is_listening = True
         self.send_start_packet = False
         self.current_user_map = 401
-        self.conn.sendall(self.csn_socket.build(opcode_02()))
+        
+        self.db_cur.execute('SELECT * FROM characters WHERE "index"=1')
+        rows = self.db_cur.fetchall()[0]
+        self.db_cur.execute('SELECT * FROM chracterapparence WHERE "index"=1')
+        apparences = self.db_cur.fetchall()[0]
+        self.conn.sendall(self.csn_socket.build(opcode_02(rows, apparences)))
 
     def handle_client(self):
         while True:
