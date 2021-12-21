@@ -3,9 +3,13 @@ import sys
 if __name__ == '__main__':
     key = b""
     xorkey = "xorKey = [\n"
+    file = ""
     if len(sys.argv) != 2:
-        print("Usage: get_xorkey.py <Fireway.dll>")
-    with open(sys.argv[1], 'rb') as f:
+        print("Drag and Drop Fireway.dll file here.")
+        file = input()
+    else:
+        file = sys.argv[1]
+    with open(file, 'rb') as f:
         f.seek(0x1E170)
         key = f.read(1024)
 
