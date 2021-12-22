@@ -1,14 +1,27 @@
 # Client-To-Server packets
 
+서버에서 클라이언트로 보내는 패킷들 입니다.
+
 |idx|name|desc|
 |---|----|----|
-|0x18||골드/캐시/위니 재설정?|
+|0x00||로그인|
+|0x02|CHARACTER_SELECT|캐릭터 선택|
+|0x03|CHARACTER_JOIN|인게임 캐릭터 입장|
+|0x04|CHARACTER_CREATE|인게임 캐릭터 생성(아마 안쓰이는듯)|
+|0x07|CHARACTER_CREATE|인게임 캐릭터 생성|
+|0x0A|CHATTING_WHISPER|귓속말|
+|0x18|GET_ITEM|골드/캐시/위니 재설정 및 아이템 획득|
+|0x19|LOST_ITEM|골드 재설정 및 아이템 판매|
 |0x27|QUEST_CLEAR|퀘스트 클리어시 보내는패킷|
+|0x28|SET_HP|캐릭터 HP 설정|
+|0x44|SET_MP|캐릭터 MP 설정|
 |0x59|GET_ITEM_OR_SKILL|??|
 |0x87||개인상점 관련|
 |0x89||개인상점 판매?|
 |0x8D||조합|
 |0x8F||보관함에서 아이템 빼기|
+|0x90|GUILD_CHAT|길드 채팅|
+|0x91|FRIENDS_CHAT|친구 채팅|
 |0xCF||보관함에서 아이템 넣기|
 
 
