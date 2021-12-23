@@ -16,11 +16,15 @@ for i in range(0x00, 0xFF):
         exec("from .packet_0x%02X import opcode_%02X" % (i, i))
     except:
         pass
+exec("from .packet_custom import opcode_custom")
 
 # Load app functions into __all__
 __all__ = [
     'opcode_01', 'opcode_02', 'opcode_03', 'opcode_04', 'opcode_07', 'opcode_08',
     'opcode_13', 'opcode_14', 'opcode_A5', 'opcode_2F', 'opcode_19',
     'opcode_18', 'opcode_26', 'opcode_59', 'opcode_28', 'opcode_51', 'opcode_29',
-    'opcode_80', 'opcode_D7', 'opcode_AE', 'opcode_99', 'opcode_25', 'opcode_05'
+    'opcode_80', 'opcode_D7', 'opcode_AE', 'opcode_99', 'opcode_25', 'opcode_05',
+    'opcode_57', 'opcode_42', 'opcode_44', 'opcode_53', 'opcode_90', 'opcode_91',
+    'opcode_0A', 'opcode_61', 'opcode_A1', 'opcode_33',
+    'opcode_custom'
 ]

@@ -11,7 +11,6 @@ def opcode_07(charinfos, equips, apparences, xpos=-1, ypos=-1) -> bytes:
     if ypos == -1:ypos=_ypos
     equips = equips[1:]
     apparences = apparences[1:]
-    print(apparences)
     v802 = 1
     payload += p8u(v802)  # Must be >= 1
     for i in range(v802):
@@ -86,20 +85,18 @@ def opcode_07(charinfos, equips, apparences, xpos=-1, ypos=-1) -> bytes:
         # line 1874
 
         for i in range(0, 10): # Cash Equip
-            payload += p16(0)
-            payload += p16(0)
-            payload += p16(0)
+            payload += p16(100)
+            payload += p16(1)
+            payload += p16(1)
             # payload += p16u(i+100)
             # payload += p16u(i+90)
             # payload += p16u(i+80)
 
         # line 1886
         payload += p8u(0)
-        # lots of loop(64), but i dont knwo why
-        # for i in range(0x40):
-        for i in range(0):
-            payload += p16u((i+10) % 0xDF) #Hp, Mp inside
-            payload += p16u((i+10) % 0xDF) # Hp, Mp inside
+        # Buff things
+        # for i in [88, 90, 94, 0x15B]:
+        #     payload += p16u(1)
         x = random.randint(1000,100000) / 100
         y = random.randint(100,1000) / 100
         # print(x, y)

@@ -16,7 +16,7 @@ class Game_Tcp_Handler():
         self.db_cur = self.db_conn.cursor()
         self.is_listening = True
         self.send_start_packet = False
-        self.current_user_map = 401
+        self.current_user_map = 201
         
         self.db_cur.execute('SELECT * FROM characters WHERE "index"=1')
         rows = self.db_cur.fetchall()[0]
@@ -74,19 +74,22 @@ class Game_Tcp_Handler():
                 equips = self.db_cur.fetchall()[0]
                 self.db_cur.execute('SELECT * FROM chracterapparence WHERE "index"=1')
                 apparences = self.db_cur.fetchall()[0]
-                print(rows)
                 (index, username, charactername, mapcode, job1, job2, _str, _dex, _int, _guts, _xpos, _ypos, level, hp, mp) = rows
-                
+                self.current_user_map = mapcode
                 
                 payload = opcode_03(mapcode)
                 self.conn.sendall(csn.build(payload))
 
                 payload = opcode_07(rows, equips, apparences)
                 self.conn.sendall(csn.build(payload))
+
+                payload = opcode_0A("Welcome to Pyslayer!", "mirusu400")
+                self.conn.sendall(csn.build(payload))
             
                 
                 for i in [80, 82, 86, 88, 90, 94, 0x15B]:
                     payload = opcode_18(i, 1)
+                    # payload = opcode_57(i)
                     self.conn.sendall(csn.build(payload))
                 # for i in range(80, 0xFFFF):
                     # csn = opcode_18(i, 1)
@@ -101,6 +104,21 @@ class Game_Tcp_Handler():
             item, count = parse_0C(csn.recv_decrypt_payload)
             payload = opcode_19(item, count)
             self.conn.sendall(csn.build(payload))
+        
+        elif opcode == 0x2C:  # GetListOfRooms
+            code = parse_2C(csn.recv_decrypt_payload)
+            if code == 0x01:
+                payload = opcode_33()
+                self.conn.sendall(csn.build(payload))
+            elif code == 0x04:
+                payload = opcode_A1()
+                self.conn.sendall(csn.build(payload))
+            else:
+                print(f"[-] GetListOfRooms: Unknown code {code}")
+        elif opcode == 0x1A:
+            unk1, unk2 = parse_1A(csn.recv_decrypt_payload)
+            # payload = opcode_34()
+            # self.conn.sendall(csn.build(payload))
 
         elif opcode == 126: # ChangeMap
             # csn = opcode_03(401)
@@ -126,6 +144,8 @@ class Game_Tcp_Handler():
             for i in [80, 82, 84, 86, 88, 90, 94, 0x15B]:
                 payload = opcode_18(i, 1)
                 self.conn.sendall(csn.build(payload))
+            payload = opcode_44()
+            self.conn.sendall(csn.build(payload))
         else:
             print("[-] Wrong Packet")
 
@@ -153,7 +173,7 @@ class Game_Server(Thread):
         """
         self.sock = socket.socket(socket.AF_INET,
                                   socket.SOCK_STREAM)
-        self.sock.bind(('127.0.0.1', self.tcp_port))
+        self.sock.bind(('0.0.0.0', self.tcp_port))
         self.sock.setblocking(0)
         self.sock.settimeout(1)
         time_reference = time.time()
@@ -211,10 +231,6 @@ class Game_Server(Thread):
                 payload = opcode_18(i, 1)
                 self.client_list[0].conn.sendall(self.client_list[0].csn_socket.build(payload))
             return
-
-        elif data == "28":
-            item = int(input("code?"))
-            payload = opcode_28(item)
         elif data == "29":
             payload = opcode_29()
         elif data == "51":
@@ -225,6 +241,12 @@ class Game_Server(Thread):
         elif data == "D7":
             item = int(input("code?"))
             payload = opcode_D7(item)
+        elif data == "mp":
+            mp = int(input("mp?"))
+            payload = opcode_44(mp)
+        elif data == "hp":
+            hp = int(input("hp?"))
+            payload = opcode_28(hp)
         elif data == "AE":
             item = int(input("code?"))
             payload = opcode_AE(item)
@@ -232,6 +254,14 @@ class Game_Server(Thread):
             payload = opcode_99(0x13)
         elif data == "supermode":
             payload = opcode_99(0x14)
+        elif data == "chat":
+            payload = opcode_61()
+        elif data == "chat2":
+            payload = opcode_91()
+        elif data == "chat3":
+            chat = input("chat?")
+            username = input("username?")
+            payload = opcode_0A(chat, username)
         elif data == "mob":
             # item = int(input("mob code?"))
             for i in range(0, 0xFFFF):
@@ -239,7 +269,15 @@ class Game_Server(Thread):
                 self.client_list[0].conn.sendall(self.client_list[0].csn_socket.build(payload))
                 time.sleep(0.1)
             return
-            # payload = opcode_25(item)
+        elif data == "custom":
+            opcode = int(input("opcode?"), 16)
+            datatype = input("datatype? (Space between)").split(" ")
+            data = input("data? (Space between)\nIf you want to type str, specify [str(length)] format.").split(" ")
+            try:
+                payload = opcode_custom(opcode, datatype, data)
+            except:
+                print("[-] Wrong Data")
+                return
         else:
             print("[-] Undefined Opcode")
             return

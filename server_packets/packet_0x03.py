@@ -22,10 +22,7 @@ def opcode_03(mapcode:int) -> bytes:
 
     payload += p8u(0)  # Bool
     
-    print(x, y)
-    payload += p32u(x)  # var_x
-    # for i in range(0, 17):  # size 17 str
-        # payload += p8u(i+10)
+    payload += p32u(x)
     payload += pstr("미루나무", 17) # Mentor name
     payload += p8u(y)  # var_y
     payload += p8u(10)
@@ -48,24 +45,25 @@ def opcode_03(mapcode:int) -> bytes:
 
     # Equipment
     payload += p8u(0)
+    # for i in [80, 82, 86, 88, 90, 94, 0x15B]:
     for i in range(0):
-        payload += p16u(90+(i*2))
+        payload += p16u(i)
         payload += p8u(5)
         for j in range(5): #enchant
             payload += p16u(j+10)
         payload += p16u(i+10)
 
     payload += p8u(0)
+    # for i in [80, 82, 86, 88, 90, 94, 0x15B]:
     for i in range(0):
-        payload += p16u(90+(i*2))
+        payload += p16u(i)
         payload += p16u(4)
 
     payload += p8u(0)  # Other item list
+    # for i in [80, 82, 86, 88, 90, 94, 0x15B]:
     for i in range(0):
-        payload += p16u(90+(i*2))
+        payload += p16u(i)
         payload += p8u(10)
-
-    # { 16 8 }
 
     # Originally p32
     # Event time

@@ -3,7 +3,7 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 
 import random
 
-# GetItem/skill
+# SellItem
 def opcode_19(idx: int, count: int):
 
     # 64 16 16

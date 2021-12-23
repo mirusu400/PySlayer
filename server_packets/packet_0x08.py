@@ -3,7 +3,7 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 
 import random
 
-# Superman Packet
+# Changemap packet
 def opcode_08(map_file_code):
 
     payload = b"\x08"

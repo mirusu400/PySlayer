@@ -15,7 +15,7 @@ def opcode_02(charinfos, apparences):
     payload += p8u(1)  # len of characters
 
     for i in range(0, 1):
-        payload += pstr(username, 16) # Size 17
+        payload += pstr(charactername, 16) # Size 17
         payload += p8u(0)  # Bool (Must be zero)
         payload += p8u(1)
         payload += p16u(10)  # Job

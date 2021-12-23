@@ -4,16 +4,23 @@
 
 |idx|name|desc|
 |---|----|----|
-|0x00||로그인|
+|0x01||로그인|
 |0x02|CHARACTER_SELECT|캐릭터 선택|
 |0x03|CHARACTER_JOIN|인게임 캐릭터 입장|
 |0x04|CHARACTER_CREATE|인게임 캐릭터 생성(아마 안쓰이는듯)|
 |0x07|CHARACTER_CREATE|인게임 캐릭터 생성|
-|0x0A|CHATTING_WHISPER|귓속말|
+|0x08|CHANGE_MAP|맵 변경|
+|0x09|CHATTING_SEND_WHISPER|귓속말 보낸 후 채팅창에 띄우는 패킷|
+|0x0A|CHATTING_RECV_WHISPER|귓속말 받은 후 채팅창에 띄우는 패킷|
+
 |0x18|GET_ITEM|골드/캐시/위니 재설정 및 아이템 획득|
 |0x19|LOST_ITEM|골드 재설정 및 아이템 판매|
 |0x27|QUEST_CLEAR|퀘스트 클리어시 보내는패킷|
 |0x28|SET_HP|캐릭터 HP 설정|
+|0x2F||무투장 입장 관련|
+|0x33||무투장 리스트 받아오기|
+|0x34||무투장, 인던 입장|
+|0x3D||HP,MP 설정(자동 체력회복)|
 |0x44|SET_MP|캐릭터 MP 설정|
 |0x59|GET_ITEM_OR_SKILL|??|
 |0x87||개인상점 관련|

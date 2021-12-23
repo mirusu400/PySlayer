@@ -23,7 +23,7 @@ class Channel_Server(Thread):
         """
         self.sock = socket.socket(socket.AF_INET,
                                   socket.SOCK_STREAM)
-        self.sock.bind(('127.0.0.1', self.tcp_port))
+        self.sock.bind(('0.0.0.0', self.tcp_port))
         self.sock.setblocking(0)
         self.sock.settimeout(1)
         time_reference = time.time()

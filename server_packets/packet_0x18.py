@@ -8,7 +8,7 @@ def opcode_18(idx: int, count: int) -> bytes:
     # csn = CSNSocket()
     payload = b"\x18"  # opcode 0x14
     payload += p64u(999999)  # Gold
-    payload += p32u(99999)  # Winnie
+    payload += p32u(999999)  # Winnie
     payload += p16u(idx)  # Item
     payload += p16(count)  # Count?
     return payload
