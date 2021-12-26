@@ -12,6 +12,7 @@ doc/Packet_handler*
 doc/Full_Packet.c
 doc/WS1.hs
 doc/WS1.rs
+utils/more
 
 # Byte-compiled / optimized / DLL files
 _key1.py
