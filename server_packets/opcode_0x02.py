@@ -1,9 +1,7 @@
 from lib import CSNSocket
 from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 
-def opcode_02(charinfos, apparences):
-    (index, username, charactername, mapcode, job1, job2, _str, _dex, _int, _guts, _xpos, _ypos, level, hp, mp) = charinfos
-    apparences = apparences[1:]
+def opcode_02(charactername, apparences):
     payload = b"\x02"
     payload += p8u(1)  # Must be 1
     payload += p32u(2)
@@ -18,7 +16,7 @@ def opcode_02(charinfos, apparences):
         payload += pstr(charactername, 16) # Size 17
         payload += p8u(0)  # Bool (Must be zero)
         payload += p8u(1)
-        payload += p16u(10)  # Job
+        payload += p16u(1)  # Job
         payload += p32u(987654)  # totalexp
         payload += p32u(665)
         payload += p32u(666)
@@ -30,11 +28,11 @@ def opcode_02(charinfos, apparences):
 
         # for i in [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1]:
         # payload += pstr("\x01"*16,17)
-        for i in [0, 0, 0, 1]:
-            payload += p8u(i)
+        for j in [0, 0, 0, 1]:
+            payload += p8u(j)
         payload += p8u(0)  # Must be 0, if 1, character removed.
-        for i in [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1]:
-            payload += p8u(i)
-        for i in apparences:  # About clothes
-            payload += p16u(i)
+        for j in [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1]:
+            payload += p8u(j)
+        for j in apparences:  # About clothes
+            payload += p16u(j)
     return payload

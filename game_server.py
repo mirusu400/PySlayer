@@ -7,6 +7,8 @@ from lib import CSNSocket
 from lib import up32u
 from server_packets import *
 from client_packets import *
+from plugin.dbhelper import DBHelper
+from plugin.player import Player
 class Game_Tcp_Handler():
     def __init__(self, conn, addr, db_conn):
         self.conn = conn
@@ -14,32 +16,32 @@ class Game_Tcp_Handler():
         self.csn_socket = CSNSocket()
         self.db_conn = db_conn
         self.db_cur = self.db_conn.cursor()
+        self.db_helper = DBHelper(db_conn)
+        self.player = None
         self.is_listening = True
         self.send_start_packet = False
-        self.current_user_map = 201
         
-        self.db_cur.execute('SELECT * FROM characters WHERE "index"=1')
-        rows = self.db_cur.fetchall()[0]
-        self.db_cur.execute('SELECT * FROM chracterapparence WHERE "index"=1')
-        apparences = self.db_cur.fetchall()[0]
-        self.conn.sendall(self.csn_socket.build(opcode_02(rows, apparences)))
+        cinfo = self.db_helper.get_characters(1)
+        apparences = self.db_helper.get_apparence(1)
+        equips = self.db_helper.get_equips(1)
+        self.player = Player(cinfo, apparences, equips)
+
+        self.conn.sendall(self.csn_socket.build(self.player.get_welcome_packet()))
 
     def handle_client(self):
         while True:
-            if self.is_listening == False:
-                break
+            if self.is_listening == False: break
             data = self.conn.recv(1024)
-            if data == b'':
-                print(f"[-] Connection closed")
-                break
             size = 0
             pos = 0
+            if data == b'': break
             while True:
                 size = data[pos]
                 self.process_packet(data[pos:pos+size])
                 pos += size
                 if pos >= len(data):
                     break
+        print("[-] Connection closed")
         self.conn.close()
         return
     
@@ -64,39 +66,57 @@ class Game_Tcp_Handler():
             # print(f"[+] MoveandSaveCharacter: {xpos}, {ypos}")
         elif opcode == 14:  # CreateCharacter
             pass
+        elif opcode == 0x15:  #UseItemorSkill
+            item = parse_15(csn.recv_decrypt_payload)
+            item_info = self.db_helper.get_item_info(item)
+            print(f"[+] UseItemorSkill: {item}, {item_info['name']}")
+            if item_info["Type"] == 0: # 소비 아이템
+                # TODO: 귀환석 추가
+                payload = self.player.set_delta_hp(item_info["HP"])
+                self.conn.sendall(self.csn_socket.build(payload))
+                payload = self.player.set_delta_mp(item_info["MP"])
+                self.conn.sendall(self.csn_socket.build(payload))
+                payload = opcode_19(item, 1)
+                self.conn.sendall(self.csn_socket.build(payload))
+            elif item_info["Type"] == 1: # 장비 아이템
+                pass
+            elif item_info["Type"] == 2: # 기타 아이템
+                pass
+            elif item_info["Type"] == 3: # 스킬
+                payload = self.player.set_delta_hp(item_info["HP"])
+                self.conn.sendall(self.csn_socket.build(payload))
+                payload = self.player.set_delta_mp(item_info["MP"])
+                self.conn.sendall(self.csn_socket.build(payload))
+            
+            
+                
+
+
         elif opcode == 22:  # AcceptQuest
             pass
         elif opcode == 43:  # EnterGame
             if self.send_start_packet == False:
-                self.db_cur.execute('SELECT * FROM characters WHERE "index"=1')
-                rows = self.db_cur.fetchall()[0]
-                self.db_cur.execute('SELECT * FROM chracterequip WHERE "index"=1')
-                equips = self.db_cur.fetchall()[0]
-                self.db_cur.execute('SELECT * FROM chracterapparence WHERE "index"=1')
-                apparences = self.db_cur.fetchall()[0]
-                (index, username, charactername, mapcode, job1, job2, _str, _dex, _int, _guts, _xpos, _ypos, level, hp, mp) = rows
-                self.current_user_map = mapcode
-                
-                payload = opcode_03(mapcode)
+                payload = self.player.get_ingame_packet()
                 self.conn.sendall(csn.build(payload))
 
-                payload = opcode_07(rows, equips, apparences)
+                payload = self.player.get_spawn_packet()
                 self.conn.sendall(csn.build(payload))
 
                 payload = opcode_0A("Welcome to Pyslayer!", "mirusu400")
                 self.conn.sendall(csn.build(payload))
             
-                
-                for i in [80, 82, 86, 88, 90, 94, 0x15B]:
-                    payload = opcode_18(i, 1)
-                    # payload = opcode_57(i)
+                for payload in self.player.get_spawn_skills():
                     self.conn.sendall(csn.build(payload))
-                # for i in range(80, 0xFFFF):
-                    # csn = opcode_18(i, 1)
-                    # self.conn.sendall(csn.build())
+                    
                 self.send_start_packet = True
-        elif opcode == 0x0B:  # GetItemOrSkill
+
+        elif opcode == 0x0B:  # BuyItemOrSckill
             item, count = parse_0B(csn.recv_decrypt_payload)
+            item_info = self.db_helper.get_item_info(item)
+            
+            if item_info['Type'] == 3: # Skill
+                self.player.add_skill(item)
+
             payload = opcode_18(item, count)
             self.conn.sendall(csn.build(payload))
         
@@ -120,32 +140,20 @@ class Game_Tcp_Handler():
             # payload = opcode_34()
             # self.conn.sendall(csn.build(payload))
 
-        elif opcode == 126: # ChangeMap
-            # csn = opcode_03(401)
-            map_file_code, xpos, ypos = parse_7E(csn.recv_decrypt_payload, self.current_user_map, self.db_cur)
-            print(f"[*] Current map: {self.current_user_map}\t Portal_code: {up32u(csn.recv_decrypt_payload[1:5])}\t")
-            self.current_user_map = map_file_code
-            self.db_cur.execute('SELECT * FROM characters WHERE "index"=1')
-            rows = self.db_cur.fetchall()[0]
-            self.db_cur.execute('SELECT * FROM chracterequip WHERE "index"=1')
-            equips = self.db_cur.fetchall()[0]
-            self.db_cur.execute('SELECT * FROM chracterapparence WHERE "index"=1')
-            apparences = self.db_cur.fetchall()[0]
-
-            payload = opcode_08(self.current_user_map)
+        elif opcode == 0x7E:
+            # ChangeMap
+            map_file_code, xpos, ypos = parse_7E(csn.recv_decrypt_payload, self.player.current_map, self.db_helper)
+            self.player.set_current_map(map_file_code, xpos, ypos)
+            
+            print(f"[*] Current map: {self.player.current_map}\t Portal_code: {up32u(csn.recv_decrypt_payload[1:5])}\t")
+            payload = self.player.get_changemap_packet()
             self.conn.sendall(csn.build(payload))
 
-            # payload = opcode_05(xpos, ypos, 0x101)
-            # self.conn.sendall(csn.build(payload))
-
-            payload = opcode_07(rows, equips, apparences, xpos, ypos)
+            payload = self.player.get_spawn_packet()
             self.conn.sendall(csn.build(payload))
 
-            for i in [80, 82, 84, 86, 88, 90, 94, 0x15B]:
-                payload = opcode_18(i, 1)
+            for payload in self.player.get_spawn_skills():
                 self.conn.sendall(csn.build(payload))
-            payload = opcode_44()
-            self.conn.sendall(csn.build(payload))
         else:
             print("[-] Wrong Packet")
 
@@ -214,22 +222,17 @@ class Game_Server(Thread):
             payload = opcode_18(item, count)
         elif data == "map":
             map = int(input("map code?"))
-            self.client_list[0].current_user_map = map
-            self.db_cur.execute('SELECT * FROM characters WHERE "index"=1')
-            rows = self.db_cur.fetchall()[0]
-            self.db_cur.execute('SELECT * FROM chracterequip WHERE "index"=1')
-            equips = self.db_cur.fetchall()[0]
-            self.db_cur.execute('SELECT * FROM chracterapparence WHERE "index"=1')
-            apparences = self.db_cur.fetchall()[0]
-            
-            payload = opcode_08(map)
-            self.client_list[0].conn.sendall(self.client_list[0].csn_socket.build(payload))
+            client = self.client_list[0]
+            client.player.set_current_map(map, 500, 500)
 
-            payload = opcode_07(rows, equips, apparences)
-            self.client_list[0].conn.sendall(self.client_list[0].csn_socket.build(payload))
-            for i in [80, 82, 86, 88, 90, 94, 0x15B]:
-                payload = opcode_18(i, 1)
-                self.client_list[0].conn.sendall(self.client_list[0].csn_socket.build(payload))
+            payload = client.player.get_changemap_packet()
+            client.conn.sendall(client.csn_socket.build(payload))
+
+            payload = client.player.get_spawn_packet()
+            client.conn.sendall(client.csn_socket.build(payload))
+
+            for payload in client.player.get_spawn_skills():
+                client.conn.sendall(client.csn_socket.build(payload))
             return
         elif data == "29":
             payload = opcode_29()

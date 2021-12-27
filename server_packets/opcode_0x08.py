@@ -13,10 +13,8 @@ def opcode_08(map_file_code):
     # 0x4 == 부적절한 방제목 사용으로\n방을 개설 하셨습니다.\n매너 점수가 삭감됩니다.
     # 0x5 == 해킹툴을 사용하였습니다.\n이 정보는 누적기록되며,\n이로 인한 불이익을 당할 수 있습니다.
 
-    payload += p8u(0)  # Must be >= 1
-    payload += p16u(map_file_code)  # Mapcode
-    x = random.randint(1, 65535)
-    y = random.randint(1, 255)
-    payload += p32u(0)  # var_x
+    payload += p8u(0) 
+    payload += p16u(map_file_code)
+    payload += p32u(0)  # wtf is this?
     payload += p32u(0)  # 누적플탐
     return payload

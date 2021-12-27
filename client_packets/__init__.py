@@ -6,5 +6,6 @@ for i in range(0x00, 0xFF):
 
 # Load app functions into __all__
 __all__ = [
-    'parse_0D', 'parse_7E', 'parse_0B', 'parse_0C', 'parse_2C', 'parse_1A'
+    'parse_0D', 'parse_7E', 'parse_0B', 'parse_0C', 'parse_2C', 'parse_1A',
+    'parse_15'
 ]

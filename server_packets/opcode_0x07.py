@@ -4,19 +4,16 @@ import sqlite3
 import random
 
 # Ingame Init packet
-def opcode_07(charinfos, equips, apparences, xpos=-1, ypos=-1) -> bytes:
+def opcode_07(charactername, job1, job2, _str, _dex, _int, _tol, level,
+    hp, mp, equips, apparences, xpos=500, ypos=500) -> bytes:
+    
     payload = b"\x07"  # opcode 7
-    (index, username, charactername, mapcode, job1, job2, _str, _dex, _int, _guts, _xpos, _ypos, level, hp, mp) = charinfos
-    if xpos == -1:xpos=_xpos
-    if ypos == -1:ypos=_ypos
-    equips = equips[1:]
-    apparences = apparences[1:]
     v802 = 1
     payload += p8u(v802)  # Must be >= 1
     for i in range(v802):
         payload += pstr(charactername, 17)
         payload += p32u(2)  # Must be 2
-        payload += p32u(3000)
+        payload += p32u(30)
         payload += p16u(1)  # If 1, send packet below:
 
         payload += p8u(2)
@@ -75,22 +72,18 @@ def opcode_07(charinfos, equips, apparences, xpos=-1, ypos=-1) -> bytes:
         payload += p16u(_str)  # 힘
         payload += p16u(_dex)  # 민첩
         payload += p16u(_int)  # 지혜
-        payload += p16u(_guts)  # 근성
+        payload += p16u(_tol)  # 근성
 
         for i in equips:  # Equip (loop 15)
             payload += p16u(i)
-            # payload += p16u(10)
             for j in range(0, 6): # Equip enchant
                 payload += p16u(0)
         # line 1874
 
         for i in range(0, 10): # Cash Equip
-            payload += p16(100)
-            payload += p16(1)
-            payload += p16(1)
-            # payload += p16u(i+100)
-            # payload += p16u(i+90)
-            # payload += p16u(i+80)
+            payload += p16(100) # Item Id
+            payload += p16(1)   # 속성부여아이템 ID
+            payload += p16(1)   # 속성부여아이템 ID
 
         # line 1886
         payload += p8u(0)

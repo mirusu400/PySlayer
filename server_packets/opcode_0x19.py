@@ -12,7 +12,7 @@ def opcode_19(idx: int, count: int):
     payload = b"\x19"  # opcode 0x19
     payload += p64u(999999)  # Gold
     payload += p16u(idx)  # idx
-    payload += p16u(count)  # Item
+    payload += p16(count)  # Count
     payload += p8(0)  # ??
     for i in range(0):
         payload += p16u(random.randint(1, 10000))
