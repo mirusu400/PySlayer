@@ -1,5 +1,5 @@
 from server_packets import opcode_02, opcode_03, opcode_07, opcode_08, opcode_18
-from server_packets import opcode_28, opcode_44
+from server_packets import opcode_28, opcode_44, opcode_2E, opcode_14
 from client_packets import parse_7E
 
 class Player():
@@ -25,6 +25,30 @@ class Player():
             2175, 2186, 2188
         ]
 
+    def add_stats(self, stat_type):
+        payload = b""
+        if stat_type == 0:
+            self.str += 1
+            payload += opcode_14(0, self.str)
+        elif stat_type == 1:
+            self.dex += 1
+            payload += opcode_14(1, self.dex)
+        elif stat_type == 2:
+            self.int += 1
+            payload += opcode_14(2, self.int)
+        elif stat_type == 3:
+            self.tol += 1
+            payload += opcode_14(3, self.tol)
+        print("Stats:", self.str, self.dex, self.int, self.tol)
+        return payload
+
+    def get_respawn_packet(self):
+        # Send opcode 04
+        return opcode_2E(self.charactername, self.job1, self.job2, self.str, self.dex, self.int, self.tol, self.level,
+            self.hp, self.mp, self.equips, self.apparences, self.xpos, self.ypos)
+
+    def get_username(self):
+        return self.charactername
 
         
     def get_welcome_packet(self):

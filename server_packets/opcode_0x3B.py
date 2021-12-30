@@ -4,9 +4,9 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 import random
 
 # Spawnmob Packet
-def opcode_25(item:int, x=random.randint(0,0xFFFFFFFF), y=random.randint(0,0xFFFF)):
+def opcode_3B(item:int, x=random.randint(0,0xFFFFFFFF), y=random.randint(0,0xFFFF)):
 
-    payload = b"\x25"
+    payload = b"\x3B"
     payload += p16u(item)
     rand = 1
     

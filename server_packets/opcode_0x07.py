@@ -12,8 +12,8 @@ def opcode_07(charactername, job1, job2, _str, _dex, _int, _tol, level,
     payload += p8u(v802)  # Must be >= 1
     for i in range(v802):
         payload += pstr(charactername, 17)
-        payload += p32u(2)  # Must be 2
-        payload += p32u(30)
+        payload += p32u(2)  # Unique Character opcode, must be >= 2
+        payload += p32u(2)
         payload += p16u(1)  # If 1, send packet below:
 
         payload += p8u(2)

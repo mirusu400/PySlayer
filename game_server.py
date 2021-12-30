@@ -4,10 +4,10 @@ import random
 from _thread import *
 from threading import Thread
 from lib import CSNSocket
+from lib import DBHelper
 from lib import up32u
 from server_packets import *
 from client_packets import *
-from plugin.dbhelper import DBHelper
 from plugin.player import Player
 class Game_Tcp_Handler():
     def __init__(self, conn, addr, db_conn):
@@ -56,6 +56,7 @@ class Game_Tcp_Handler():
 
         csn.decrypt(data)
         if csn.recv_opcode != 0xD:
+
             csn.printheader()
             csn.printdata()
         opcode = csn.recv_opcode
@@ -64,6 +65,15 @@ class Game_Tcp_Handler():
             # csn.printdata()
             pass
             # print(f"[+] MoveandSaveCharacter: {xpos}, {ypos}")
+        elif opcode == 0x3: # chatting
+            length, text = parse_03(csn.recv_decrypt_payload)
+            print(f"[+] User chatting: {text}")
+            payload = opcode_16(self.player.get_username(), text)
+            self.conn.sendall(self.csn_socket.build(payload))
+            
+        elif opcode == 0x4: # setStats
+            payload = self.player.add_stats(int(csn.recv_decrypt_payload[1]))
+            self.conn.sendall(self.csn_socket.build(payload))
         elif opcode == 14:  # CreateCharacter
             pass
         elif opcode == 0x15:  #UseItemorSkill
@@ -265,19 +275,33 @@ class Game_Server(Thread):
             chat = input("chat?")
             username = input("username?")
             payload = opcode_0A(chat, username)
-        elif data == "mob":
-            # item = int(input("mob code?"))
-            for i in range(0, 0xFFFF):
-                payload = opcode_25(i,i,i)
-                self.client_list[0].conn.sendall(self.client_list[0].csn_socket.build(payload))
-                time.sleep(0.1)
+        elif data == "spawnmob":
+            item = int(input("mob code?"))
+            payload = opcode_25(item)
+            self.client_list[0].conn.sendall(self.client_list[0].csn_socket.build(payload))
+        
+            # for i in range(0, 0xFFFF):
+                # payload = opcode_25(i,i,i)
+                # self.client_list[0].conn.sendall(self.client_list[0].csn_socket.build(payload))
+                # time.sleep(0.1)
             return
+        elif data == "batchmob":
+            for i in range(0x1000,0xFFFF):
+                payload = opcode_25(i)
+                self.client_list[0].conn.sendall(self.client_list[0].csn_socket.build(payload))
+            return
+        elif data == "deathmob":
+            item = int(input("mob code?"))
+            return
+
         elif data == "custom":
-            opcode = int(input("opcode?"), 16)
+            opcode = int(input("opcode? (In hex)"), 16)
             datatype = input("datatype? (Space between)").split(" ")
             data = input("data? (Space between)\nIf you want to type str, specify [str(length)] format.").split(" ")
             try:
                 payload = opcode_custom(opcode, datatype, data)
+                print(payload)
+                print(len(payload))
             except:
                 print("[-] Wrong Data")
                 return

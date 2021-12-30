@@ -3,26 +3,26 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 import sqlite3
 import random
 
-# Ingame Init packet
-def opcode_05(charactername, job1, job2, _str, _dex, _int, _tol, level,
+# CharacterReset?
+def opcode_2E(charactername, job1, job2, _str, _dex, _int, _tol, level,
     hp, mp, equips, apparences, xpos=500, ypos=500) -> bytes:
     
-    payload = b"\x05"  # opcode 5
+    payload = b"\x2B"  # opcode 2E
     v802 = 1
     payload += p8u(v802)  # Must be >= 1
     for i in range(v802):
         payload += pstr(charactername, 17)
-        payload += p32u(2)  # Must be 2
+        payload += p32u(10)  # Must be 2
         payload += p32u(30)
-        payload += p16u(1)  # If 1, send packet below:
-
-        payload += p8u(2)
-        payload += pstr("나혼자산다", 17)
+        payload += p16u(0)  # If 1, send packet below:
+        # Pstr(17) p16 p16
+        # payload += p8u(2)
+        # payload += pstr("나혼자산다", 17)
 
         # If >1, send packet below{str 16 16}:
         # If ==1, Bool
         # Guild info
-        payload += p16u(0)
+        payload += p8u(0)
         # payload += pstr("MyGuild", 17)
         # payload += p16u(0)
         # payload += p16u(0)
@@ -38,21 +38,6 @@ def opcode_05(charactername, job1, job2, _str, _dex, _int, _tol, level,
         #     16 16 16
         #   16
         # }
-        payload += p8u(0)
-        # payload += p16u(1)
-        # payload += pstr("내혼녀", 17)
-        # payload += p16u(10)
-        # payload += p16u(11)
-        # payload += p16u(12)
-        # payload += p16u(13)
-
-        # payload += p16u(1)
-        # payload += b"mirusu403012345\0" #partnername
-
-        # payload += p16u(0)
-        # payload += p16u(0)
-        # payload += p16u(0)
-        # payload += p16u(0)
 
         # === end if
         # 4 == 도적 ( 2 == 트랩퍼)
@@ -73,6 +58,8 @@ def opcode_05(charactername, job1, job2, _str, _dex, _int, _tol, level,
         payload += p16u(_dex)  # 민첩
         payload += p16u(_int)  # 지혜
         payload += p16u(_tol)  # 근성
+        payload += p16u(100)
+        payload += p16u(101)
 
         for i in equips:  # Equip (loop 15)
             payload += p16u(i)
@@ -85,53 +72,24 @@ def opcode_05(charactername, job1, job2, _str, _dex, _int, _tol, level,
             payload += p16(1)   # 속성부여아이템 ID
             payload += p16(1)   # 속성부여아이템 ID
 
-        # line 1886
+        # line 4188
         payload += p8u(0)
         # Buff things
         # for i in [88, 90, 94, 0x15B]:
         #     payload += p16u(1)
-        x = random.randint(1000,100000) / 100
-        y = random.randint(100,1000) / 100
-        # print(x, y)
-
-        payload += p8u(0)
-
-        payload += pf64(xpos)
-        payload += pf64(ypos)
-
-        payload += p32u(32)
-        payload += p8u(0)  # Bool
+        
+        # 4225
+        payload += p8u(0) # Something
+    
         payload += p8u(1)
+        payload += p8u(2)
+        payload += p8u(3)
+        payload += p32u(100)
 
-        payload += p32u(501)
-        payload += p32u(502)
-        payload += p8u(1)
-        payload += p32u(503)
-
-        payload += p8u(102)
-        payload += p8u(101)
-        payload += p8u(100)
-        payload += p8u(99)
-
-        payload += p8u(0)  # Bool
-        payload += p8u(0)  # Bool
-        payload += p8u(0)  # Bool
-        payload += p8u(0)  # Bool
-        payload += p8u(0)  # Bool
-        payload += p8u(0)  # Bool
-        payload += p8u(0)  # Bool
-
-        payload += p16u(hp) # HP
-        payload += p16u(mp) # MP
-
-        payload += p32u(700)
-        payload += p8u(30)
-
-        # these packets are send on else method..
-        payload += p8u(1) # bool
-        payload += p8u(113)
-        payload += pstr("123456789", 13)  # 13 bytes
-
+        # Else method
+        payload += p8u(0) # Bool
+        payload += p8(1)
+        payload += pstr("test",13)
         # for i in range(0,8000):
         #     payload += p8u(i % 0xFF)
     return payload

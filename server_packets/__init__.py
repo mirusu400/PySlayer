@@ -1028,6 +1028,7 @@ __all__ = [
     'opcode_18', 'opcode_26', 'opcode_59', 'opcode_28', 'opcode_51', 'opcode_29',
     'opcode_80', 'opcode_D7', 'opcode_AE', 'opcode_99', 'opcode_25', 'opcode_05',
     'opcode_57', 'opcode_42', 'opcode_44', 'opcode_53', 'opcode_90', 'opcode_91',
-    'opcode_0A', 'opcode_61', 'opcode_A1', 'opcode_33',
+    'opcode_0A', 'opcode_61', 'opcode_A1', 'opcode_33', 'opcode_05', 'opcode_2E',
+    'opcode_16',
     'opcode_custom'
 ]
