@@ -117,9 +117,6 @@ class Game_Tcp_Handler():
                 payload = self.player.get_spawn_packet()
                 self.conn.sendall(csn.build(payload))
 
-                payload = self.player.get_set_maxhp_and_maxmp_packets()
-                self.conn.sendall(csn.build(payload))
-
                 payload = opcode_0A("Welcome to Pyslayer!", "mirusu400")
                 self.conn.sendall(csn.build(payload))
             

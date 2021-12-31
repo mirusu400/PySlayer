@@ -69,8 +69,10 @@ class Player():
     
     def get_spawn_packet(self):
         # Send opcode 07
-        return opcode_07(self.uid, self.charactername, self.job1, self.job2, self.str, self.dex, self.int, self.tol, self.level,
+        p1 = opcode_07(self.uid, self.charactername, self.job1, self.job2, self.str, self.dex, self.int, self.tol, self.level,
             self.hp, self.mp, self.equips, self.apparences, self.xpos, self.ypos)
+        p2 = opcode_25(300)
+        return [p1, p2]
     
     def get_spawn_skills(self):
         for i in self.skills_list:

@@ -13,7 +13,12 @@ An single python server emulator of MMORPG game `WindSlayer` also known as `WS1`
 3. `server.py` 파일을 실행하면 자동으로 서버가 실행됩니다. 이후 패치된 야후 윈드슬레이어 클라이언트를 실행하면 됩니다.
 
 # What can we do for now?
-지금 현재는 인게임밖에 안됩니다.
+- Ingame
+- Can travel map
+- Set HP / MP
+- Item Buying / Selling
+- Use Skill / Buffs
+- Use Item
 
 # TODO
 - [ ] 패킷 분석 및 문서화

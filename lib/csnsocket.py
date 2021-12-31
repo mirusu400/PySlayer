@@ -18,31 +18,22 @@ class CSNSocket:
         self.recv_hash = 0
         self.recv_payload = None
         self.recv_decrypt_payload = None
-        # cls = type(self)
-        # if not hasattr(cls, "_init"):
-        #     print("CSNsocket::__init__ is called")
-
-        #     # seqnum is just the order that packet is sent/receive.
-        #     self.send_packet_length = 0
-        #     self.send_seqnum = 0
-        #     self.send_opcode = 0
-        #     self.send_hash = 0
-        #     self.send_payload = None
-
-        #     self.recv_packet_length = 0
-        #     self.recv_seqnum = 0
-        #     self.recv_opcode = 0
-        #     self.recv_hash = 0
-        #     self.recv_payload = None
-        #     self.recv_decrypt_payload = None
-        # cls._init = True
 
     def build(self, payload):
-        self.inject_payload(payload)
         p = b""
-        p += p32(self.send_packet_length)
-        p += p32(self.send_hash)  # hash
-        p += self.send_payload
+
+        if type(payload) == bytes:
+            self.inject_payload(payload)
+            p += p32(self.send_packet_length)
+            p += p32(self.send_hash)  # hash
+            p += self.send_payload
+            
+        elif type(payload) == list:
+            for i in range(len(payload)):
+                self.inject_payload(payload[i])
+                p += p32(self.send_packet_length)
+                p += p32(self.send_hash)
+                p += self.send_payload
         return p
 
     def inject_payload(self, payload):
