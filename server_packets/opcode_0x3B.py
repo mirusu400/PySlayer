@@ -3,12 +3,16 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 
 import random
 
-# Spawnmob Packet
-def opcode_3B(item:int, x=random.randint(0,0xFFFFFFFF), y=random.randint(0,0xFFFF)):
+# UseSkills
+def opcode_3B(skill:int, uid, time):
 
     payload = b"\x3B"
-    payload += p16u(item)
-    rand = 1
+    payload += p16u(skill)
+    payload += p8u(0) # If 1, add p32u (one more)
+    payload += p32u(uid)
+    payload += p16u(time)
+    payload += p16u(time)
+    # rand = 1
     
     # payload += p8u(1) # Bool
     # payload += p32u(x)

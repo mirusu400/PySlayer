@@ -6,8 +6,8 @@ from lib import CSNSocket
 from lib import p8, p16, p32, p64
 from server_packets import *
 
-class Channel_Server(Thread):
-    def __init__(self, lock, tcp_port = 7011):
+class Patch_Server(Thread):
+    def __init__(self, lock, tcp_port = 1234):
         """
         Create a new tcp server
         """
@@ -36,13 +36,10 @@ class Channel_Server(Thread):
                 continue
             csnsocket = CSNSocket()
             time_reference = time.time()
-            print(f"Channel server {time_reference}: {addr} connected.")
-            payload = opcode_01()
+            print(f"Patch server {time_reference}: {addr} connected.")
             # print(conn.recv(1024))
-            conn.sendall(csnsocket.build(payload))
-            
             conn.close()
-        print("[-] Channel server Closed")
+        print("[-] Patch server Closed")
         self.stop()
 
         

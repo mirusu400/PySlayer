@@ -4,7 +4,7 @@ import sqlite3
 import random
 
 # Ingame Init packet
-def opcode_07(charactername, job1, job2, _str, _dex, _int, _tol, level,
+def opcode_07(uid, charactername, job1, job2, _str, _dex, _int, _tol, level,
     hp, mp, equips, apparences, xpos=500, ypos=500) -> bytes:
     
     payload = b"\x07"  # opcode 7
@@ -12,7 +12,7 @@ def opcode_07(charactername, job1, job2, _str, _dex, _int, _tol, level,
     payload += p8u(v802)  # Must be >= 1
     for i in range(v802):
         payload += pstr(charactername, 17)
-        payload += p32u(2)  # Unique Character opcode, must be >= 2
+        payload += p32u(uid)  # Unique Character opcode, must be >= 2
         payload += p32u(2)
         payload += p16u(1)  # If 1, send packet below:
 

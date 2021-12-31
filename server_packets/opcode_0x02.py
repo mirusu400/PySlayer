@@ -1,10 +1,10 @@
 from lib import CSNSocket
 from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 
-def opcode_02(charactername, apparences):
+def opcode_02(uid, charactername, apparences):
     payload = b"\x02"
     payload += p8u(1)  # Must be 1
-    payload += p32u(2)
+    payload += p32u(uid) # Character UID (Same as opcode_07)
     payload += p8u(3)
     payload += p8u(4)
     payload += p32u(5)

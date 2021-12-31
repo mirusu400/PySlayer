@@ -25,7 +25,7 @@ class Game_Tcp_Handler():
         apparences = self.db_helper.get_apparence(1)
         equips = self.db_helper.get_equips(1)
         self.player = Player(cinfo, apparences, equips)
-
+        # print(self.conn.recv(1024))
         self.conn.sendall(self.csn_socket.build(self.player.get_welcome_packet()))
 
     def handle_client(self):
@@ -42,6 +42,7 @@ class Game_Tcp_Handler():
                 if pos >= len(data):
                     break
         print("[-] Connection closed")
+        self.is_listening = False
         self.conn.close()
         return
     
@@ -93,6 +94,10 @@ class Game_Tcp_Handler():
             elif item_info["Type"] == 2: # 기타 아이템
                 pass
             elif item_info["Type"] == 3: # 스킬
+                if item_info["Con"] > 0:
+                    time = item_info["Con"]
+                    payload = self.player.get_usebuffskill_packet(item, time)
+                    self.conn.sendall(self.csn_socket.build(payload))
                 payload = self.player.set_delta_hp(item_info["HP"])
                 self.conn.sendall(self.csn_socket.build(payload))
                 payload = self.player.set_delta_mp(item_info["MP"])
@@ -110,6 +115,9 @@ class Game_Tcp_Handler():
                 self.conn.sendall(csn.build(payload))
 
                 payload = self.player.get_spawn_packet()
+                self.conn.sendall(csn.build(payload))
+
+                payload = self.player.get_set_maxhp_and_maxmp_packets()
                 self.conn.sendall(csn.build(payload))
 
                 payload = opcode_0A("Welcome to Pyslayer!", "mirusu400")
@@ -209,6 +217,9 @@ class Game_Server(Thread):
             self.client_list.append(tcpsocket)
             
             start_new_thread(tcpsocket.handle_client, ())
+            for idx, item in enumerate(self.client_list):
+                if item.is_listening == False:
+                    del self.client_list[idx]
             # TODO: remove client from list when disconnected
         for client in self.client_list:
             try:
@@ -295,13 +306,17 @@ class Game_Server(Thread):
             return
 
         elif data == "custom":
-            opcode = int(input("opcode? (In hex)"), 16)
-            datatype = input("datatype? (Space between)").split(" ")
-            data = input("data? (Space between)\nIf you want to type str, specify [str(length)] format.").split(" ")
             try:
-                payload = opcode_custom(opcode, datatype, data)
-                print(payload)
-                print(len(payload))
+                opcode = int(input("opcode? (In hex)"), 16)
+                datatype = input("datatype? (Space between)").split(" ")
+                data = input("data? (Space between)\nIf you want to type str, specify [str(length)] format.").split(" ")
+                try:
+                    payload = opcode_custom(opcode, datatype, data)
+                    print(payload)
+                    print(len(payload))
+                except:
+                    print("[-] Wrong Data")
+                    return
             except:
                 print("[-] Wrong Data")
                 return

@@ -1,10 +1,12 @@
 from server_packets import opcode_02, opcode_03, opcode_07, opcode_08, opcode_18
-from server_packets import opcode_28, opcode_44, opcode_2E, opcode_14
+from server_packets import opcode_28, opcode_44, opcode_2E, opcode_14, opcode_3B
+from server_packets import opcode_25
 from client_packets import parse_7E
 
 class Player():
     def __init__(self, cinfo, apparences, equips):
         self.level = cinfo["level"]
+        self.uid = cinfo["index"]
         self.charactername = cinfo["charactername"]
         self.current_map = cinfo["mapcode"]
         self.str = cinfo["str"]
@@ -42,6 +44,12 @@ class Player():
         print("Stats:", self.str, self.dex, self.int, self.tol)
         return payload
 
+    def get_set_maxhp_and_maxmp_packets(self):
+        return opcode_25(500)
+
+    def get_usebuffskill_packet(self, skillid, time):
+        return opcode_3B(skillid, self.uid, time)
+
     def get_respawn_packet(self):
         # Send opcode 04
         return opcode_2E(self.charactername, self.job1, self.job2, self.str, self.dex, self.int, self.tol, self.level,
@@ -53,7 +61,7 @@ class Player():
         
     def get_welcome_packet(self):
         # Send opcode 02
-        return opcode_02(self.charactername, self.apparences)
+        return opcode_02(self.uid, self.charactername, self.apparences)
 
     def get_ingame_packet(self):
         # Send opcode 03
@@ -61,7 +69,7 @@ class Player():
     
     def get_spawn_packet(self):
         # Send opcode 07
-        return opcode_07(self.charactername, self.job1, self.job2, self.str, self.dex, self.int, self.tol, self.level,
+        return opcode_07(self.uid, self.charactername, self.job1, self.job2, self.str, self.dex, self.int, self.tol, self.level,
             self.hp, self.mp, self.equips, self.apparences, self.xpos, self.ypos)
     
     def get_spawn_skills(self):

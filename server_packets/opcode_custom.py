@@ -13,21 +13,25 @@ def opcode_custom(opcode, datatype, data):
     assert len(datatype) == len(data)
     for i in range(len(datatype)):
         if "p8" in datatype[i]:
-            payload += p8(int(data[i]))
+            if "-" == datatype[i][0]:
+                payload += p8(int(data[i]))
+            else:
+                payload += p8u(int(data[i]))
         elif "p16" in datatype[i]:
-            payload += p16(int(data[i]))
-        elif datatype[i] == "p32":
-            payload += p32(int(data[i]))
-        elif datatype[i] == "p64":
-            payload += p64(int(data[i]))
-        elif datatype[i] == "p8u":
-            payload += p8u(int(data[i]))
-        elif datatype[i] == "p16u":
-            payload += p16u(int(data[i]))
-        elif datatype[i] == "p32u":
-            payload += p32u(int(data[i]))
-        elif datatype[i] == "p64u":
-            payload += p64u(int(data[i]))
+            if "-" == datatype[i][0]:
+                payload += p16(int(data[i]))
+            else:
+                payload += p16u(int(data[i]))
+        elif "p32" in datatype[i]:
+            if "-" == datatype[i][0]:
+                payload += p32(int(data[i]))
+            else:
+                payload += p32u(int(data[i]))
+        elif "p64" in datatype[i]:
+            if "-" == datatype[i][0]:
+                payload += p64(int(data[i]))
+            else:
+                payload += p64u(int(data[i]))
         elif datatype[i] == "pf32":
             payload += pf32(float(data[i]))
         elif datatype[i] == "pf64":

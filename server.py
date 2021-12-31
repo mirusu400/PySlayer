@@ -15,7 +15,7 @@ import sqlite3
 from threading import Thread, Lock
 from channel_server import Channel_Server
 from game_server import Game_Server
-
+from patch_server import Patch_Server
 
 
 def main_loop():
@@ -26,9 +26,11 @@ def main_loop():
     db_conn = sqlite3.connect("./db.sqlite3", check_same_thread=False)
     channel_server = Channel_Server(lock)
     game_server = Game_Server(lock, db_conn)
+    patch_server = Patch_Server(lock)
     
     channel_server.start()
     game_server.start()
+    patch_server.start()
     is_running = True
     print("Single WS1 Emulator Server.")
     print("--------------------------------------")
@@ -44,12 +46,14 @@ def main_loop():
             print("Shutting down  server...")
             channel_server.is_listening = False
             game_server.is_listening = False
+            patch_server.is_listening = False
             
             is_running = False
         if cmd == "quit" or cmd == "exit" or cmd == "q":
             print("Shutting down  server...")
             channel_server.is_listening = False
             game_server.is_listening = False
+            patch_server.is_listening = False
             
             is_running = False
         elif cmd == "reset":
