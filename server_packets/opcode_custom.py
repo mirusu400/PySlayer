@@ -39,6 +39,6 @@ def opcode_custom(opcode, datatype, data):
         elif datatype[i] == "pstr":
             tstr = data[i].split("(")[0]
             length = int(data[i].split("(")[1].split(")")[0])
-            payload += pstr(tstr[i], length)
+            payload += pstr(tstr, length)
 
     return payload

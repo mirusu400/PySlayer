@@ -13,7 +13,7 @@ def opcode_07(uid, charactername, job1, job2, _str, _dex, _int, _tol, level,
     for i in range(v802):
         payload += pstr(charactername, 17)
         payload += p32u(uid)  # Unique Character opcode, must be >= 2
-        payload += p32u(2)
+        payload += p32u(1)
         payload += p16u(1)  # If 1, send packet below:
 
         payload += p8u(2)
@@ -81,17 +81,15 @@ def opcode_07(uid, charactername, job1, job2, _str, _dex, _int, _tol, level,
         # line 1874
 
         for i in range(0, 10): # Cash Equip
-            payload += p16(100) # Item Id
-            payload += p16(1)   # 속성부여아이템 ID
-            payload += p16(1)   # 속성부여아이템 ID
+            payload += p16(0) # Item Id
+            payload += p16(0)   # 속성부여아이템 ID
+            payload += p16(0)   # 속성부여아이템 ID
 
         # line 1886
         payload += p8u(0)
         # Buff things
         # for i in [88, 90, 94, 0x15B]:
         #     payload += p16u(1)
-        x = random.randint(1000,100000) / 100
-        y = random.randint(100,1000) / 100
         # print(x, y)
 
         payload += p8u(0)
@@ -105,13 +103,13 @@ def opcode_07(uid, charactername, job1, job2, _str, _dex, _int, _tol, level,
 
         payload += p32u(501)
         payload += p32u(502)
-        payload += p8u(1)
+        payload += p8u(100)
         payload += p32u(503)
 
-        payload += p8u(102)
-        payload += p8u(101)
-        payload += p8u(100)
-        payload += p8u(99)
+        payload += p8u(0)
+        payload += p8u(0)
+        payload += p8u(0)
+        payload += p8u(0)
 
         payload += p8u(0)  # Bool
         payload += p8u(0)  # Bool
@@ -124,19 +122,19 @@ def opcode_07(uid, charactername, job1, job2, _str, _dex, _int, _tol, level,
         payload += p16u(hp) # HP
         payload += p16u(mp) # MP
 
-        payload += p32u(700)
-        payload += p8u(30)
+        payload += p32u(1)
+        payload += p8u(1)
 
         # these packets are send on else method..
         payload += p8u(1) # bool
-        payload += p8u(113)
+        payload += p8u(1)
         payload += pstr("123456789", 13)  # 13 bytes
-        payload += p8u(12)
-        payload += p8u(11)
+        payload += p8u(1)
+        payload += p8u(1)
         payload += p32u(800)
-        payload += p8u(114)
-        payload += p16u(11)
-        payload += p16u(12)
+        payload += p8u(1)
+        payload += p16u(101)
+        payload += p16u(101)
 
         # for i in range(0,8000):
         #     payload += p8u(i % 0xFF)

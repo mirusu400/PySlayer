@@ -36,6 +36,11 @@ def main_loop():
     print("--------------------------------------")
     print("quit : quit server")
     print("reset: reset server")
+    print("map: change map")
+    print("spawnmob: spawn mob or npc")
+    print("item: get item")
+    print("hp: set hp")
+    print("mp: set mp")
     print("--------------------------------------")
 
     while is_running:

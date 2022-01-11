@@ -62,7 +62,7 @@ class Game_Tcp_Handler():
             csn.printdata()
         opcode = csn.recv_opcode
         if opcode == 0xD: # MoveandSaveCharacter
-            # xpos, ypos = parse_0D(csn.recv_decrypt_payload)
+            parse_0D(csn.recv_decrypt_payload)
             # csn.printdata()
             pass
             # print(f"[+] MoveandSaveCharacter: {xpos}, {ypos}")
@@ -285,18 +285,13 @@ class Game_Server(Thread):
             payload = opcode_0A(chat, username)
         elif data == "spawnmob":
             item = int(input("mob code?"))
-            payload = opcode_25(item)
+            payload = opcode_1A(item)
             self.client_list[0].conn.sendall(self.client_list[0].csn_socket.build(payload))
         
             # for i in range(0, 0xFFFF):
                 # payload = opcode_25(i,i,i)
                 # self.client_list[0].conn.sendall(self.client_list[0].csn_socket.build(payload))
                 # time.sleep(0.1)
-            return
-        elif data == "batchmob":
-            for i in range(0x1000,0xFFFF):
-                payload = opcode_25(i)
-                self.client_list[0].conn.sendall(self.client_list[0].csn_socket.build(payload))
             return
         elif data == "deathmob":
             item = int(input("mob code?"))
@@ -314,8 +309,8 @@ class Game_Server(Thread):
                 except:
                     print("[-] Wrong Data")
                     return
-            except:
-                print("[-] Wrong Data")
+            except Exception as e:
+                print(f"[-] Wrong Data: {str(e)}")
                 return
         else:
             print("[-] Undefined Opcode")

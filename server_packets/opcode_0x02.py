@@ -1,6 +1,7 @@
 from lib import CSNSocket
 from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 
+# 캐릭터선택창 패킷
 def opcode_02(uid, charactername, apparences):
     payload = b"\x02"
     payload += p8u(1)  # Must be 1

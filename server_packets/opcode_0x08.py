@@ -15,6 +15,6 @@ def opcode_08(map_file_code):
 
     payload += p8u(0) 
     payload += p16u(map_file_code)
-    payload += p32u(0)  # wtf is this?
+    payload += p32u(1)  # wtf is this?
     payload += p32u(0)  # 누적플탐
     return payload
