@@ -4,10 +4,10 @@ import sqlite3
 import random
 
 # Mob about packet
-def opcode_1A(npccode) -> bytes:
+def opcode_1A(npccode, xpos=-1, ypos=-1) -> bytes:
     payload = b"\x1A"  # opcode 1A
-    xpos = float(input("xpos?"))
-    ypos = float(input("ypos?"))
+    xpos = xpos if xpos != -1 else float(input("xpos?"))
+    ypos = ypos if ypos != -1 else float(input("ypos?"))
     v748 = 1
     uid = 0xFFFF + 1
     # xpos = 398
