@@ -9,6 +9,8 @@ from lib import up32u
 from server_packets import *
 from client_packets import *
 from plugin.player import Player
+from plugin.custom_cmd import Custom_CMD
+
 class Game_Tcp_Handler():
     def __init__(self, conn, addr, db_conn):
         self.conn = conn
@@ -17,6 +19,7 @@ class Game_Tcp_Handler():
         self.db_conn = db_conn
         self.db_cur = self.db_conn.cursor()
         self.db_helper = DBHelper(db_conn)
+        
         self.player = None
         self.is_listening = True
         self.send_start_packet = False
@@ -25,6 +28,7 @@ class Game_Tcp_Handler():
         apparences = self.db_helper.get_apparence(1)
         equips = self.db_helper.get_equips(1)
         self.player = Player(cinfo, apparences, equips)
+        self.custom_cmd = Custom_CMD(self.player)
         # print(self.conn.recv(1024))
         self.conn.sendall(self.csn_socket.build(self.player.get_welcome_packet()))
 
@@ -69,8 +73,12 @@ class Game_Tcp_Handler():
         elif opcode == 0x3: # chatting
             length, text = parse_03(csn.recv_decrypt_payload)
             print(f"[+] User chatting: {text}")
-            payload = opcode_16(self.player.get_username(), text)
-            self.conn.sendall(self.csn_socket.build(payload))
+            if text[0] == "/":
+                payload = self.custom_cmd.get_chatting_cmd(text[1:])
+                self.conn.sendall(self.csn_socket.build(payload))
+            else:
+                payload = opcode_16(self.player.get_username(), text)
+                self.conn.sendall(self.csn_socket.build(payload))
             
         elif opcode == 0x4: # setStats
             payload = self.player.add_stats(int(csn.recv_decrypt_payload[1]))
@@ -188,6 +196,7 @@ class Game_Server(Thread):
         self.msg = '{"success": "%(success)s", "message":"%(message)s"}'
         self.conn = None
         self.send_start_packet = False
+        self.custom_cmd = Custom_CMD()
         self.client_list = []
 
     def run(self):
@@ -231,91 +240,10 @@ class Game_Server(Thread):
         """
         Send custom opcode
         """
-        payload = None
-        if data == "13":
-            payload = opcode_13()
-        elif data == "18" or data == "item":
-            item = int(input("item code?"))
-            count = int(input("count?"))
-            payload = opcode_18(item, count)
-        elif data == "map":
-            map = int(input("map code?"))
-            client = self.client_list[0]
-            client.player.set_current_map(map, 500, 500)
-
-            payload = client.player.get_changemap_packet()
-            client.conn.sendall(client.csn_socket.build(payload))
-
-            payload = client.player.get_spawn_packet()
-            client.conn.sendall(client.csn_socket.build(payload))
-
-            for payload in client.player.get_spawn_skills():
-                client.conn.sendall(client.csn_socket.build(payload))
-            return
-        elif data == "29":
-            payload = opcode_29()
-        elif data == "51":
-            item = int(input("code?"))
-            payload = opcode_51(item)
-        elif data == "80":
-            payload = opcode_80()
-        elif data == "D7":
-            item = int(input("code?"))
-            payload = opcode_D7(item)
-        elif data == "mp":
-            mp = int(input("mp?"))
-            payload = opcode_44(mp)
-        elif data == "hp":
-            hp = int(input("hp?"))
-            payload = opcode_28(hp)
-        elif data == "AE":
-            item = int(input("code?"))
-            payload = opcode_AE(item)
-        elif data == "superman":
-            payload = opcode_99(0x13)
-        elif data == "supermode":
-            payload = opcode_99(0x14)
-        elif data == "chat":
-            payload = opcode_61()
-        elif data == "chat2":
-            payload = opcode_91()
-        elif data == "chat3":
-            chat = input("chat?")
-            username = input("username?")
-            payload = opcode_0A(chat, username)
-        elif data == "spawnmob":
-            item = int(input("mob code?"))
-            payload = opcode_1A(item)
+        self.custom_cmd.set_player(self.client_list[0].player)
+        payload = self.custom_cmd.get_custom_cmd_packet(data)
+        if payload != None:
             self.client_list[0].conn.sendall(self.client_list[0].csn_socket.build(payload))
-        
-            # for i in range(0, 0xFFFF):
-                # payload = opcode_25(i,i,i)
-                # self.client_list[0].conn.sendall(self.client_list[0].csn_socket.build(payload))
-                # time.sleep(0.1)
-            return
-        elif data == "deathmob":
-            item = int(input("mob code?"))
-            return
-
-        elif data == "custom":
-            try:
-                opcode = int(input("opcode? (In hex)"), 16)
-                datatype = input("datatype? (Space between)").split(" ")
-                data = input("data? (Space between)\nIf you want to type str, specify [str(length)] format.").split(" ")
-                try:
-                    payload = opcode_custom(opcode, datatype, data)
-                    print(payload)
-                    print(len(payload))
-                except:
-                    print("[-] Wrong Data")
-                    return
-            except Exception as e:
-                print(f"[-] Wrong Data: {str(e)}")
-                return
-        else:
-            print("[-] Undefined Opcode")
-            return
-        self.client_list[0].conn.sendall(self.client_list[0].csn_socket.build(payload))
         
 
     def stop(self):

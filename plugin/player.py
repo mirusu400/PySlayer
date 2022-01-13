@@ -67,18 +67,18 @@ class Player():
         # Send opcode 03
         return opcode_03(self.current_map)
     
-    def get_spawn_packet(self):
+    def get_spawn_packet(self) -> bytes:
         # Send opcode 07
         p1 = opcode_07(self.uid, self.charactername, self.job1, self.job2, self.str, self.dex, self.int, self.tol, self.level,
             self.hp, self.mp, self.equips, self.apparences, self.xpos, self.ypos)
         p2 = opcode_25(300)
         return [p1, p2]
     
-    def get_spawn_skills(self):
+    def get_spawn_skills(self) -> bytes:
         for i in self.skills_list:
             yield opcode_18(i, 1)
 
-    def get_changemap_packet(self):
+    def get_changemap_packet(self) -> bytes:
         # Send opcode 08
         return opcode_08(self.current_map)
 

@@ -2,10 +2,16 @@
 An single python server emulator of MMORPG game `WindSlayer` also known as `WS1`.
 
 # Requirements
-* Python >= 3.7
+* 3.7 <= Python <= 3.9
+* [external_proc](https://github.com/bananasss00/external_proc)
 * Old windslayer client (Korea Yahoo! ver.)
 
 # Installation
+0. Python 을 설치해줍니다. 그리고 pip를 통해 `external_proc` 을 설치합니다.
+```
+pip install external_proc
+```
+
 1. 윈드슬레이어 야후 버전(MD5:`209dfadadbd83badaab2f85d075accae`)을 구해서 `/patch/WS1Yahoo.xdelta` 패치를 적용합니다. 서버를 로컬호스트로 돌리고, 야후로 리다이렉션 되는것을 막아줍니다. 
 
 2. `/utils/get_xorkey.py`를 실행하면 검은색창이 나오는데, 윈드슬레이어 야후 버전의 `Fireway.dll`파일을 검은색 창 위로 드래그 한 후 엔터를 누릅니다. 자동으로 `_key.py` 파일이 생성되면 이를 `server.py`가 있는 폴더와 동일한 경로에 놔둡니다.
