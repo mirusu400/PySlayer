@@ -8,6 +8,8 @@ def opcode_1A(npccode, xpos=-1, ypos=-1) -> bytes:
     payload = b"\x1A"  # opcode 1A
     xpos = xpos if xpos != -1 else float(input("xpos?"))
     ypos = ypos if ypos != -1 else float(input("ypos?"))
+    _xpos = int(xpos)
+    _ypos = int(ypos)
     v748 = 1
     uid = 0xFFFF + 1
     # xpos = 398
@@ -39,12 +41,12 @@ def opcode_1A(npccode, xpos=-1, ypos=-1) -> bytes:
         payload += p8u(0)
         payload += p8u(0)
 
-        payload += p32u(0)
-        payload += p32u(0)
-        payload += p32u(0)
-        payload += p32u(0)
-        payload += p32u(0)
-        payload += p32u(0)
+        payload += p32u(_xpos)
+        payload += p32u(_ypos)
+        payload += p32u(_xpos)
+        payload += p32u(_ypos)
+        payload += p32u(_xpos)
+        payload += p32u(_ypos)
 
 
         payload += p8u(0) # Bool
