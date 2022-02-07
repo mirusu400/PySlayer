@@ -4,23 +4,24 @@ from server_packets import opcode_25, opcode_99, opcode_61, opcode_91, opcode_0A
 from server_packets import opcode_custom
 from client_packets import parse_7E
 from external_proc import *
-
+from plugin.player import Player
 class Custom_CMD:
     def __init__(self, player=None):
-        self.player = player
+        self.player: Player = player
         return
 
     def set_player(self, player):
         self.player = player
 
     def get_chatting_cmd(self, chat) -> bytes:
-        if chat[0:4] == "item":
+        cmd = chat.split(" ")[0]
+        if cmd == "item":
             try:
                 item, count = map(int,chat[4:].split(" "))
                 return opcode_18(item, count)
             except:
                 return None
-        elif chat[0:3] == "map":
+        elif cmd == "map":
             try:
                 payload = []
                 map_id = int(chat.split(" ")[1])
@@ -33,12 +34,17 @@ class Custom_CMD:
                 return payload
             except:
                 return None
+        elif cmd == "pos":
+            try:
+                self.set_internal_pos(float(chat.split(" ")[1]), float(chat.split(" ")[2]))
+                return None
+            except:
+                return None
 
-        elif chat[0:6] == "getpos":
+        elif cmd == "getpos":
             return self.get_internal_pos(chat)
 
-        elif chat[0:3] == "mob":
-            
+        elif cmd == "mob":
             try:
                 npcidx = int(chat.split(" ")[1])
                 payload = self.get_internal_pos("mob", npcidx)
@@ -47,6 +53,16 @@ class Custom_CMD:
             except Exception as e:
                 print(e)
                 return None
+        
+        elif cmd == "dumpmob":
+            self.player.dump_mob()
+            return opcode_91("Dump done!")
+        
+        elif cmd == "loadmob":
+            return self.player.load_mob()
+
+
+        
             
     
     def get_custom_cmd_packet(self, cmd) -> bytes:
@@ -125,9 +141,8 @@ class Custom_CMD:
                             .go_ptr(0x13E0)
                 CharX = Proc.read.double(Position.get_address())
                 CharY = Proc.read.double(Position.get_address() + 0x90)
-
                 if cmd == "mob":
-                    payload = opcode_1A(npcidx, CharX, CharY)
+                    payload = self.player.add_mob(npcidx, CharX, CharY)
                 elif cmd == "getpos":
                     payload = opcode_91("[Console Message] CharX : {X}, CharY : {Y}".format(X = CharX, Y = CharY))
                     print("[Console Message] CharX : {X}, CharY : {Y}".format(X = CharX, Y = CharY))
@@ -135,4 +150,18 @@ class Custom_CMD:
         except Exception as e:
                 print("[-] Except : ", type(e))
                 print(e)
+                return None
+
+    def set_internal_pos(self, x, y):
+        try:
+            with ExtProcess.ctx_open("WindSlayer.exe") as Proc:
+                
+                Position = Proc.make_ptr(0x00572590, PtrType.Uint32)\
+                            .go_ptr(0xFD0)\
+                            .go_ptr(0x13E0)
+                Proc.write.double(Position.get_address(), x)
+                Proc.write.double(Position.get_address() + 0x90, y)
+                return
+        except Exception as e:
+                print("[-] Except : ", type(e))
                 return None

@@ -1,8 +1,8 @@
 from server_packets import opcode_02, opcode_03, opcode_07, opcode_08, opcode_18
 from server_packets import opcode_28, opcode_44, opcode_2E, opcode_14, opcode_3B
-from server_packets import opcode_25
+from server_packets import opcode_25, opcode_1A
 from client_packets import parse_7E
-
+import json
 class Player():
     def __init__(self, cinfo, apparences, equips):
         self.level = cinfo["level"]
@@ -26,6 +26,29 @@ class Player():
             80, 82, 86, 88, 90, 94, 194, 
             2175, 2186, 2188
         ]
+        self.mob_pos_list = []
+        self.mob_idx = 0x000F0000
+
+    def add_mob(self, mob_id, xpos, ypos):
+        self.mob_pos_list.append({
+            "mob_id": mob_id,
+            "xpos": xpos,
+            "ypos": ypos})
+        self.mob_idx += 0x000F0000 + len(self.mob_pos_list)
+        return opcode_1A(mob_id, self.mob_idx, xpos, ypos)
+    
+    def dump_mob(self):
+        with open(f"./maps/{self.current_map}.json", "w", encoding="utf-8") as f:
+            json.dump(self.mob_pos_list, f, ensure_ascii=False, indent=4)
+        return
+    
+    def load_mob(self):
+        ops = []
+        with open(f"./maps/{self.current_map}.json", "r", encoding="utf-8") as f:
+            self.mob_pos_list = json.load(f)
+        for idx, mob in enumerate(self.mob_pos_list):
+            ops.append(opcode_1A(mob["mob_id"], (self.mob_idx + idx), mob["xpos"], mob["ypos"]))
+        return ops
 
     def add_stats(self, stat_type):
         payload = b""
@@ -69,6 +92,7 @@ class Player():
     
     def get_spawn_packet(self) -> bytes:
         # Send opcode 07
+        self.mob_pos_list = []
         p1 = opcode_07(self.uid, self.charactername, self.job1, self.job2, self.str, self.dex, self.int, self.tol, self.level,
             self.hp, self.mp, self.equips, self.apparences, self.xpos, self.ypos)
         p2 = opcode_25(300)

@@ -23,9 +23,8 @@ def main_loop():
     Start udp tcp server threads
     """
     lock = Lock()
-    db_conn = sqlite3.connect("./db.sqlite3", check_same_thread=False)
     channel_server = Channel_Server(lock)
-    game_server = Game_Server(lock, db_conn)
+    game_server = Game_Server(lock)
     patch_server = Patch_Server(lock)
     
     channel_server.start()
@@ -71,7 +70,6 @@ def main_loop():
         else:
             game_server.send_custom_opcode(cmd)
 
-    db_conn.close()
     channel_server.join()
     game_server.join()
 

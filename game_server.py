@@ -12,13 +12,11 @@ from plugin.player import Player
 from plugin.custom_cmd import Custom_CMD
 
 class Game_Tcp_Handler():
-    def __init__(self, conn, addr, db_conn):
+    def __init__(self, conn, addr):
         self.conn = conn
         self.addr = addr
         self.csn_socket = CSNSocket()
-        self.db_conn = db_conn
-        self.db_cur = self.db_conn.cursor()
-        self.db_helper = DBHelper(db_conn)
+        self.db_helper = DBHelper()
         
         self.player = None
         self.is_listening = True
@@ -182,14 +180,12 @@ class Game_Tcp_Handler():
 
 
 class Game_Server(Thread):
-    def __init__(self, lock, db_conn, tcp_port=7012):
+    def __init__(self, lock, tcp_port=7012):
         """
         Create a new tcp server
         """
         Thread.__init__(self)
         self.lock = lock
-        self.db_conn = db_conn
-        self.db_cur = self.db_conn.cursor()
         self.tcp_port = int(tcp_port)
         self.is_listening = True
         self.sock = None
@@ -219,7 +215,7 @@ class Game_Server(Thread):
                 continue
             time_reference = time.time()
             print(f"[+] Game Server Ch1. {time_reference}: {addr} connected at idx {len(self.client_list) + 1}.")
-            tcpsocket = Game_Tcp_Handler(conn, addr, self.db_conn)
+            tcpsocket = Game_Tcp_Handler(conn, addr)
             self.client_list.append(tcpsocket)
             
             start_new_thread(tcpsocket.handle_client, ())

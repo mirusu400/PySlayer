@@ -4,14 +4,14 @@ import sqlite3
 import random
 
 # Mob about packet
-def opcode_1A(npccode, xpos=-1, ypos=-1) -> bytes:
+def opcode_1A(npccode, mob_uid, xpos=-1, ypos=-1) -> bytes:
     payload = b"\x1A"  # opcode 1A
     xpos = xpos if xpos != -1 else float(input("xpos?"))
     ypos = ypos if ypos != -1 else float(input("ypos?"))
     _xpos = int(xpos)
     _ypos = int(ypos)
     v748 = 1
-    uid = 0xFFFF + 1
+    uid = mob_uid
     # xpos = 398
     # ypos = 450
     payload += p8u(v748)  # Must be >= 1
@@ -41,6 +41,7 @@ def opcode_1A(npccode, xpos=-1, ypos=-1) -> bytes:
         payload += p8u(0)
         payload += p8u(0)
 
+        # About monster base pos
         payload += p32u(_xpos)
         payload += p32u(_ypos)
         payload += p32u(_xpos)
@@ -56,7 +57,7 @@ def opcode_1A(npccode, xpos=-1, ypos=-1) -> bytes:
         payload += p32u(1)
 
         payload += p8u(0)
-        payload += p32u(0)
+        payload += p32u(1)
 
         payload += p8u(0)
         payload += p8u(0)
