@@ -54,16 +54,16 @@ class Player():
         payload = b""
         if stat_type == 0:
             self.str += 1
-            payload += opcode_14(0, self.str)
+            payload += opcode_14(self.uid, 0, self.str)
         elif stat_type == 1:
             self.dex += 1
-            payload += opcode_14(1, self.dex)
+            payload += opcode_14(self.uid, 1, self.dex)
         elif stat_type == 2:
             self.int += 1
-            payload += opcode_14(2, self.int)
+            payload += opcode_14(self.uid, 2, self.int)
         elif stat_type == 3:
             self.tol += 1
-            payload += opcode_14(3, self.tol)
+            payload += opcode_14(self.uid, 3, self.tol)
         print("Stats:", self.str, self.dex, self.int, self.tol)
         return payload
 
