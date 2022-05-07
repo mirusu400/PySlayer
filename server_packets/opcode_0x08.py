@@ -4,7 +4,7 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 import random
 
 # Changemap packet
-def opcode_08(map_file_code):
+def opcode_08(map_file_code, uid):
 
     payload = b"\x08"
     # 0x1 == PVP 서버와 연결이 끊어졌습니다. 인터넷 연결을 확인해 주세요.
@@ -15,6 +15,6 @@ def opcode_08(map_file_code):
 
     payload += p8u(0) 
     payload += p16u(map_file_code)
-    payload += p32u(1)  # wtf is this?
+    payload += p32u(uid)  # wtf is this?
     payload += p32u(0)  # 누적플탐
     return payload

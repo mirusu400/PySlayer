@@ -3,7 +3,7 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 
 import random
 
-# useSkills
+# 
 def opcode_25(skill:int, x=random.randint(0,0xFFFFFFFF), y=random.randint(0,0xFFFF)):
 
     payload = b"\x25"

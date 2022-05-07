@@ -93,7 +93,7 @@ class Game_Tcp_Handler():
                 self.conn.sendall(self.csn_socket.build(payload))
                 payload = self.player.set_delta_mp(item_info["MP"])
                 self.conn.sendall(self.csn_socket.build(payload))
-                payload = opcode_19(item, 1)
+                payload = [opcode_25(300), opcode_19(item, 1)]
                 self.conn.sendall(self.csn_socket.build(payload))
             elif item_info["Type"] == 1: # 장비 아이템
                 pass

@@ -104,7 +104,7 @@ class Player():
 
     def get_changemap_packet(self) -> bytes:
         # Send opcode 08
-        return opcode_08(self.current_map)
+        return opcode_08(self.current_map, self.uid)
 
     def add_skill(self, skillid):
         self.skills_list.append(skillid)
@@ -116,11 +116,13 @@ class Player():
     
     def set_delta_hp(self, hp):
         self.hp += hp
-        return opcode_28(self.hp)
+        p1 = opcode_28(self.hp)
+        return p1
     
     def set_delta_mp(self, mp):
         self.mp += mp
-        return opcode_44(self.mp)
+        p1 = opcode_44(self.mp)
+        return p1
 
     def get_apparence(self):
         return self.apparences
