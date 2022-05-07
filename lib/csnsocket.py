@@ -21,8 +21,9 @@ class CSNSocket:
 
     def build(self, payload):
         p = b""
-
-        if type(payload) == bytes:
+        if payload == None or len(payload) == 0:
+            return p
+        elif type(payload) == bytes:
             self.inject_payload(payload)
             p += p32(self.send_packet_length)
             p += p32(self.send_hash)  # hash

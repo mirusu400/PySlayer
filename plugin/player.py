@@ -44,8 +44,12 @@ class Player():
     
     def load_mob(self):
         ops = []
-        with open(f"./maps/{self.current_map}.json", "r", encoding="utf-8") as f:
-            self.mob_pos_list = json.load(f)
+        self.mob_pos_list = []
+        try:
+            with open(f"./maps/{self.current_map}.json", "r", encoding="utf-8") as f:
+                self.mob_pos_list = json.load(f)
+        except FileNotFoundError:
+            pass
         for idx, mob in enumerate(self.mob_pos_list):
             ops.append(opcode_1A(mob["mob_id"], (self.mob_idx + idx), mob["xpos"], mob["ypos"]))
         return ops
