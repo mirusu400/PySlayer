@@ -27,10 +27,7 @@ class Custom_CMD:
                 map_id = int(chat.split(" ")[1])
                 self.player.set_current_map(map_id, 500, 500)
                 payload.append(self.player.get_changemap_packet())
-                payload += self.player.get_spawn_packet()
-                for p in self.player.get_spawn_skills():
-                    payload.append(p)
-                print(payload)
+                payload.append(self.player.get_spawn_packet())
                 return payload
             except:
                 return None
@@ -48,7 +45,6 @@ class Custom_CMD:
             try:
                 npcidx = int(chat.split(" ")[1])
                 payload = self.get_internal_pos("mob", npcidx)
-                print(payload)
                 return payload
             except Exception as e:
                 print(e)
@@ -81,8 +77,6 @@ class Custom_CMD:
             self.player.set_current_map(map, 500, 500)
             payload.append(self.player.get_changemap_packet())
             payload.append(self.player.get_spawn_packet())
-            for p in self.player.get_spawn_skills():
-                payload.append(p)
 
         elif cmd == "mp":
             mp = int(input("mp?"))

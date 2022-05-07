@@ -42,13 +42,14 @@ class Player():
             json.dump(self.mob_pos_list, f, ensure_ascii=False, indent=4)
         return
     
-    def load_mob(self):
+    def load_mob(self) -> bytes:
         ops = []
         self.mob_pos_list = []
         try:
             with open(f"./maps/{self.current_map}.json", "r", encoding="utf-8") as f:
                 self.mob_pos_list = json.load(f)
         except FileNotFoundError:
+            print("No mob file found")
             pass
         for idx, mob in enumerate(self.mob_pos_list):
             ops.append(opcode_1A(mob["mob_id"], (self.mob_idx + idx), mob["xpos"], mob["ypos"]))
@@ -94,17 +95,22 @@ class Player():
         # Send opcode 03
         return opcode_03(self.current_map)
     
-    def get_spawn_packet(self) -> bytes:
+    def get_spawn_packet(self):
         # Send opcode 07
         self.mob_pos_list = []
         p1 = opcode_07(self.uid, self.charactername, self.job1, self.job2, self.str, self.dex, self.int, self.tol, self.level,
             self.hp, self.mp, self.equips, self.apparences, self.xpos, self.ypos)
-        p2 = opcode_25(300)
-        return [p1, p2]
+        # p2 = opcode_25(300)
+        p3 = self.get_spawn_skills()
+        p4 = self.load_mob()
+
+        return [p1, p3, p4]
     
     def get_spawn_skills(self) -> bytes:
+        payload = []
         for i in self.skills_list:
-            yield opcode_18(i, 1)
+            payload.append(opcode_18(i, 1))
+        return payload
 
     def get_changemap_packet(self) -> bytes:
         # Send opcode 08

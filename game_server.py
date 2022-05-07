@@ -126,15 +126,7 @@ class Game_Tcp_Handler():
                 # Send welcome chat
                 payload = opcode_0A("Welcome to Pyslayer!", "mirusu400")
                 self.conn.sendall(csn.build(payload))
-            
-                for payload in self.player.get_spawn_skills():
-                    self.conn.sendall(csn.build(payload))
-                
-                # Send mob
-                payload = self.player.load_mob()
-                self.conn.sendall(csn.build(payload))
-                
-                    
+           
                 self.send_start_packet = True
 
         elif opcode == 0x0B:  # BuyItemOrSckill
@@ -177,12 +169,6 @@ class Game_Tcp_Handler():
             self.conn.sendall(csn.build(payload))
 
             payload = self.player.get_spawn_packet()
-            self.conn.sendall(csn.build(payload))
-
-            for payload in self.player.get_spawn_skills():
-                self.conn.sendall(csn.build(payload))
-            
-            payload = self.player.load_mob()
             self.conn.sendall(csn.build(payload))
         else:
             print("[-] Wrong Packet")
@@ -247,6 +233,7 @@ class Game_Server(Thread):
         """
         self.custom_cmd.set_player(self.client_list[0].player)
         payload = self.custom_cmd.get_custom_cmd_packet(data)
+        print(payload)
         if payload != None:
             self.client_list[0].conn.sendall(self.client_list[0].csn_socket.build(payload))
         

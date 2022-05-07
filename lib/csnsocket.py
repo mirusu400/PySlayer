@@ -1,8 +1,16 @@
 from .packlib import *
 from _key import xorKey
+import itertools
 import struct
 import binascii
-
+def flatten(l):
+    out = []
+    for item in l:
+        if type(item) == list:
+            out.extend(flatten(item))
+        else:
+            out.append(item)
+    return out
 
 class CSNSocket:
     def __init__(self):
@@ -21,6 +29,7 @@ class CSNSocket:
 
     def build(self, payload):
         p = b""
+        
         if payload == None or len(payload) == 0:
             return p
         elif type(payload) == bytes:
@@ -30,12 +39,17 @@ class CSNSocket:
             p += self.send_payload
             
         elif type(payload) == list:
+            payload = flatten(payload)
             for i in range(len(payload)):
-                self.inject_payload(payload[i])
-                p += p32(self.send_packet_length)
-                p += p32(self.send_hash)
-                p += self.send_payload
+                if payload[i] == None or len(payload[i]) == 0:
+                    continue
+                if type(payload[i]) == bytes:
+                    self.inject_payload(payload[i])
+                    p += p32(self.send_packet_length)
+                    p += p32(self.send_hash)
+                    p += self.send_payload
         return p
+    
 
     def inject_payload(self, payload):
         self.send_seqnum = (self.send_seqnum + 1) & 0xFF
