@@ -46,3 +46,4 @@ pip install external_proc
 
 # Special Thanks
 * Riuga for help reversing `CSNsocket` and build some server-side packets.
+* [Other people who help me to make this project, check here](https://github.com/mirusu400/PySlayer/blob/main/SPECIAL_THANKS.md)

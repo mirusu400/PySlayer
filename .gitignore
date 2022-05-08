@@ -13,6 +13,7 @@ doc/Full_Packet.c
 doc/WS1.hs
 doc/WS1.rs
 utils/more
+hidden/
 
 # Byte-compiled / optimized / DLL files
 _key1.py
