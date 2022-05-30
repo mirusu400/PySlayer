@@ -14,6 +14,6 @@ def parse_0D(payload: bytes):
     keycode = payload[0x0B]
 
 
-    print(binascii.hexlify(payload))
+    # print(binascii.hexlify(payload))
     
     return 

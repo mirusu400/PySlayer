@@ -5,9 +5,10 @@ from client_packets import parse_7E
 import json
 class Player():
     def __init__(self, cinfo, apparences, equips):
+        self.ip = ""
         self.level = cinfo["level"]
         self.uid = cinfo["index"]
-        self.charactername = cinfo["charactername"]
+        self.character_name = cinfo["charactername"]
         self.current_map = cinfo["mapcode"]
         self.str = cinfo["str"]
         self.dex = cinfo["dex"]
@@ -129,26 +130,25 @@ class Player():
 
     def get_respawn_packet(self):
         # Send opcode 04
-        return opcode_2E(self.charactername, self.job1, self.job2, self.str, self.dex, self.int, self.tol, self.level,
+        return opcode_2E(self.character_name, self.job1, self.job2, self.str, self.dex, self.int, self.tol, self.level,
             self.hp, self.mp, self.equips, self.apparences, self.xpos, self.ypos)
 
     def get_username(self):
-        return self.charactername
+        return self.character_name
 
         
     def get_welcome_packet(self):
         # Send opcode 02
-        return opcode_02(self.uid, self.charactername, self.apparences)
+        return opcode_02(self.uid, self.character_name, self.apparences)
 
     def get_ingame_packet(self):
         # Send opcode 03
         return opcode_03(self.current_map)
     
-    def get_spawn_packet(self):
+    def get_spawn_packet(self, tcp_connections_list, my_tcp_connection):
         # Send opcode 07
         self.mob_pos_list = []
-        p1 = opcode_07(self.uid, self.charactername, self.job1, self.job2, self.str, self.dex, self.int, self.tol, self.level,
-            self.hp, self.mp, self.equips, self.apparences, self.xpos, self.ypos)
+        p1 = opcode_07(tcp_connections_list, my_tcp_connection)
         # p2 = opcode_25(300)
         p3 = self.get_spawn_skills()
         p4 = self.load_mob()

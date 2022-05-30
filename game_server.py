@@ -1,4 +1,5 @@
 import socket
+import this
 import time
 import random
 from _thread import *
@@ -10,8 +11,13 @@ from server_packets import *
 from client_packets import *
 from plugin.player import Player
 from plugin.custom_cmd import Custom_CMD
+from plugin.binprint import BinPrint
+
+# Maps for each client
+maps = {}
 
 class Game_Tcp_Handler():
+    # Every one player for one class
     def __init__(self, conn, addr):
         self.conn = conn
         self.addr = addr
@@ -21,14 +27,27 @@ class Game_Tcp_Handler():
         self.player = None
         self.is_listening = True
         self.send_start_packet = False
+
         
         cinfo = self.db_helper.get_characters(1)
         apparences = self.db_helper.get_apparence(1)
         equips = self.db_helper.get_equips(1)
         self.player = Player(cinfo, apparences, equips)
         self.custom_cmd = Custom_CMD(self.player)
-        # print(self.conn.recv(1024))
+
+        if self.player.current_map not in maps.keys():
+            maps[self.player.current_map] = [self]
+        else:
+            maps[self.player.current_map].append(self)
+        
+
         self.conn.sendall(self.csn_socket.build(self.player.get_welcome_packet()))
+
+    def __str__(self):
+        return f"{self.addr} \t {self.get_ip()} \t {self.player.character_name}"
+
+    def get_ip(self):
+        return self.player.ip
 
     def handle_client(self):
         while True:
@@ -61,7 +80,9 @@ class Game_Tcp_Handler():
         if csn.recv_opcode != 0xD:
 
             csn.printheader()
-            csn.printdata()
+            b = BinPrint(csn.recv_decrypt_payload)
+            b.print()
+        
         opcode = csn.recv_opcode
         if opcode == 0xD: # MoveandSaveCharacter
             parse_0D(csn.recv_decrypt_payload)
@@ -115,13 +136,17 @@ class Game_Tcp_Handler():
 
         elif opcode == 22:  # AcceptQuest
             pass
-        elif opcode == 43:  # EnterGame
+        elif opcode == 0x2B:  # EnterGame (2B)
             if self.send_start_packet == False:
+
+                self.player.ip = parse_2B(csn.recv_decrypt_payload)
                 payload = self.player.get_ingame_packet()
                 self.conn.sendall(csn.build(payload))
 
-                payload = self.player.get_spawn_packet()
+                payload = self.player.get_spawn_packet(
+                    maps[self.player.current_map], self)
                 self.conn.sendall(csn.build(payload))
+
 
                 # Send welcome chat
                 payload = opcode_0A("Welcome to Pyslayer!", "mirusu400")
@@ -162,13 +187,23 @@ class Game_Tcp_Handler():
         elif opcode == 0x7E:
             # ChangeMap
             map_file_code, xpos, ypos = parse_7E(csn.recv_decrypt_payload, self.player.current_map, self.db_helper)
+            
+            maps[self.player.current_map].remove(self)
+            if map_file_code not in maps.keys():
+                maps[map_file_code] = [self]
+            else:
+                maps[map_file_code].append(self)
+
+            print(maps)
+
             self.player.set_current_map(map_file_code, xpos, ypos)
             
             print(f"[*] Current map: {self.player.current_map}\t Portal_code: {up32u(csn.recv_decrypt_payload[1:5])}\t")
             payload = self.player.get_changemap_packet()
             self.conn.sendall(csn.build(payload))
 
-            payload = self.player.get_spawn_packet()
+            payload = self.player.get_spawn_packet(
+                maps[self.player.current_map], self)
             self.conn.sendall(csn.build(payload))
         else:
             print("[-] Wrong Packet")

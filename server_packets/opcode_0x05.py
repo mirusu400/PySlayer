@@ -4,14 +4,14 @@ import sqlite3
 import random
 
 # Ingame Init packet
-def opcode_05(charactername, job1, job2, _str, _dex, _int, _tol, level,
+def opcode_05(character_name, job1, job2, _str, _dex, _int, _tol, level,
     hp, mp, equips, apparences, xpos=500, ypos=500) -> bytes:
     
     payload = b"\x05"  # opcode 5
     v802 = 1
     payload += p8u(v802)  # Must be >= 1
     for i in range(v802):
-        payload += pstr(charactername, 17)
+        payload += pstr(character_name, 17)
         payload += p32u(2)  # Must be 2
         payload += p32u(30)
         payload += p16u(1)  # If 1, send packet below:
