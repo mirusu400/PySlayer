@@ -1,5 +1,4 @@
 import socket
-import this
 import time
 import random
 from _thread import *
