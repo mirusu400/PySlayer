@@ -3,12 +3,14 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 
 import random
 
-def opcode_03(mapcode:int) -> bytes:
+
+
+def opcode_03(player) -> bytes:
     payload = b"\x03"
     x = random.randint(65535, 210000000)
     y = random.randint(1, 255)
     payload += p8u(1)  # Must be >= 1
-    payload += p16u(mapcode)  # Mapcode
+    payload += p16u(player.current_map)  # Mapcode
     payload += p32u(x)
 
     payload += p64u(976431)  # gold

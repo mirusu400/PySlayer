@@ -2,7 +2,11 @@ from server_packets import opcode_02, opcode_03, opcode_07, opcode_08, opcode_18
 from server_packets import opcode_28, opcode_44, opcode_2E, opcode_14, opcode_3B
 from server_packets import opcode_25, opcode_1A
 from client_packets import parse_7E
+from .maps import Maps
 import json
+
+m = Maps()
+
 class Player():
     def __init__(self, cinfo, apparences, equips):
         self.ip = ""
@@ -143,11 +147,12 @@ class Player():
 
     def get_ingame_packet(self):
         # Send opcode 03
-        return opcode_03(self.current_map)
+        return opcode_03(self)
     
-    def get_spawn_packet(self, tcp_connections_list, my_tcp_connection):
+    def get_spawn_packet(self, my_tcp_connection):
         # Send opcode 07
         self.mob_pos_list = []
+        tcp_connections_list = m.get_tcp_connections_in_map(self.current_map)
         p1 = opcode_07(tcp_connections_list, my_tcp_connection)
         # p2 = opcode_25(300)
         p3 = self.get_spawn_skills()

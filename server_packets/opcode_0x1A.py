@@ -82,5 +82,4 @@ def opcode_1A(npccode, mob_uid, xpos=-1, ypos=-1) -> bytes:
             payload += p32u(1)
             payload += p32u(1)
 
-        print(payload)
         return payload

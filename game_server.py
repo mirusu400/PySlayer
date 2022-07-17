@@ -11,9 +11,10 @@ from client_packets import *
 from plugin.player import Player
 from plugin.custom_cmd import Custom_CMD
 from plugin.binprint import BinPrint
-
-# Maps for each client
-maps = {}
+from plugin.maps import Maps
+from plugin.ip_connector import Ip_Connector
+m = Maps()
+i = Ip_Connector()
 
 class Game_Tcp_Handler():
     # Every one player for one class
@@ -26,19 +27,16 @@ class Game_Tcp_Handler():
         self.player = None
         self.is_listening = True
         self.send_start_packet = False
-
+        print("[+] New connection from", addr[0])
+        self.index = i.get_index_from_ip(addr[0])
         
-        cinfo = self.db_helper.get_characters(1)
-        apparences = self.db_helper.get_apparence(1)
-        equips = self.db_helper.get_equips(1)
+        cinfo = self.db_helper.get_characters(self.index)
+        apparences = self.db_helper.get_apparence(self.index)
+        equips = self.db_helper.get_equips(self.index)
         self.player = Player(cinfo, apparences, equips)
-        self.custom_cmd = Custom_CMD(self.player)
+        self.custom_cmd = Custom_CMD(self.player, self)
 
-        if self.player.current_map not in maps.keys():
-            maps[self.player.current_map] = [self]
-        else:
-            maps[self.player.current_map].append(self)
-        
+        m.add_tcp_conntion_to_maps(self)
 
         self.conn.sendall(self.csn_socket.build(self.player.get_welcome_packet()))
 
@@ -139,11 +137,11 @@ class Game_Tcp_Handler():
             if self.send_start_packet == False:
 
                 self.player.ip = parse_2B(csn.recv_decrypt_payload)
+                print(f"[+] EnterGame: {self.player.ip}")
                 payload = self.player.get_ingame_packet()
                 self.conn.sendall(csn.build(payload))
 
-                payload = self.player.get_spawn_packet(
-                    maps[self.player.current_map], self)
+                payload = self.player.get_spawn_packet(self)
                 self.conn.sendall(csn.build(payload))
 
 
@@ -187,13 +185,9 @@ class Game_Tcp_Handler():
             # ChangeMap
             map_file_code, xpos, ypos = parse_7E(csn.recv_decrypt_payload, self.player.current_map, self.db_helper)
             
-            maps[self.player.current_map].remove(self)
-            if map_file_code not in maps.keys():
-                maps[map_file_code] = [self]
-            else:
-                maps[map_file_code].append(self)
+            m.change_map(self, self.player.current_map, map_file_code)
 
-            print(maps)
+            print(m._maps)
 
             self.player.set_current_map(map_file_code, xpos, ypos)
             
@@ -201,8 +195,7 @@ class Game_Tcp_Handler():
             payload = self.player.get_changemap_packet()
             self.conn.sendall(csn.build(payload))
 
-            payload = self.player.get_spawn_packet(
-                maps[self.player.current_map], self)
+            payload = self.player.get_spawn_packet(self)
             self.conn.sendall(csn.build(payload))
         else:
             print("[-] Wrong Packet")
@@ -243,7 +236,7 @@ class Game_Server(Thread):
             except socket.timeout:
                 continue
             time_reference = time.time()
-            print(f"[+] Game Server Ch1. {time_reference}: {addr} connected at idx {len(self.client_list) + 1}.")
+            print(f"[+] Game Server Ch1. {time_reference}: {addr} {conn} connected at idx {len(self.client_list) + 1}.")
             tcpsocket = Game_Tcp_Handler(conn, addr)
             self.client_list.append(tcpsocket)
             

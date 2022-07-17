@@ -5,9 +5,14 @@ from server_packets import opcode_custom
 from client_packets import parse_7E
 from external_proc import *
 from plugin.player import Player
+from plugin.maps import Maps
+
+m = Maps()
+
 class Custom_CMD:
-    def __init__(self, player=None):
+    def __init__(self, player=None, connection=None):
         self.player: Player = player
+        self.connection = connection
         return
 
     def set_player(self, player):
@@ -25,11 +30,17 @@ class Custom_CMD:
             try:
                 payload = []
                 map_id = int(chat.split(" ")[1])
+                
+                m.change_map(self.connection, self.player.current_map, map_id)
+
                 self.player.set_current_map(map_id, 500, 500)
+            
                 payload.append(self.player.get_changemap_packet())
-                payload.append(self.player.get_spawn_packet())
+                payload.append(self.player.get_spawn_packet(self.connection))
                 return payload
             except:
+                print("[-] Wrong Map Code")
+                raise
                 return None
         elif cmd == "pos":
             try:
@@ -76,7 +87,7 @@ class Custom_CMD:
             map = int(input("map code?"))
             self.player.set_current_map(map, 500, 500)
             payload.append(self.player.get_changemap_packet())
-            payload.append(self.player.get_spawn_packet())
+            payload.append(self.player.get_spawn_packet(self.connection))
 
         elif cmd == "mp":
             mp = int(input("mp?"))

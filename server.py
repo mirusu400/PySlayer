@@ -32,6 +32,7 @@ def main_loop():
     patch_server.start()
     is_running = True
     print("Single WS1 Emulator Server.")
+    print(f"YOUR LOCAL IP: {socket.gethostbyname(socket.gethostname())}")
     print("--------------------------------------")
     print("quit : quit server")
     print("reset: reset server")
