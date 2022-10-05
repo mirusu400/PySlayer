@@ -17,4 +17,4 @@ class Ip_Connector:
         if str(ip) in self._ip_connector.keys():
             return self._ip_connector[str(ip)]
         else:
-            return None
+            return "1"
