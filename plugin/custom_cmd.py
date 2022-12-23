@@ -76,6 +76,7 @@ class Custom_CMD:
         """
         Getting cmds, return payload(packets)
         """
+        cmd = cmd.strip()
         payload = None
         if cmd == "item":
             item = int(input("item code?"))
@@ -112,9 +113,9 @@ class Custom_CMD:
         elif cmd == "deathmob":
             item = int(input("mob code?"))
             return
-        elif cmd == "mob" or "getpos":
+        elif cmd == "mob" or cmd == "getpos":
             return self.get_internal_pos(cmd)
-
+        
         elif cmd == "custom":
             try:
                 opcode = int(input("opcode? (In hex)"), 16)

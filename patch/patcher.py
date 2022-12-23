@@ -12,7 +12,7 @@ if __name__ == '__main__':
         exit()
     with open(file, "rb") as f:
         data = bytearray(f.read())
-        # data[0xA49b8] = 0x74
+        data[0xA49b8] = 0x74
         for i in range(0x1C):
             if i > len(a)-1:
                 data[0x155340+i] = 0x00
