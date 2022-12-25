@@ -153,6 +153,7 @@ class Player():
         # Send opcode 07
         self.mob_pos_list = []
         tcp_connections_list = m.get_tcp_connections_in_map(self.current_map)
+        print(f"[+] TCP Connections in map: {tcp_connections_list}")
         p1 = opcode_07(tcp_connections_list, my_tcp_connection)
         # p2 = opcode_25(300)
         p3 = self.get_spawn_skills()

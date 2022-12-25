@@ -13,9 +13,10 @@ class Maps:
             self._maps = {}
 
     def add_tcp_conntion_to_maps(self, connection, map_id = None):
-        print(connection)
         if map_id is None:
             map_id = connection.player.current_map
+        print(f"[+] {connection} is added to map {map_id}")
+        
         if map_id not in self._maps.keys():
             self._maps[map_id] = [connection]
         else:
