@@ -1020,6 +1020,7 @@ except:
     pass
 
 from .opcode_custom import opcode_custom
+from .opcode_fuzz import opcode_fuzz
 
 
 # Load app functions into __all__
@@ -1031,5 +1032,5 @@ __all__ = [
     'opcode_57', 'opcode_42', 'opcode_44', 'opcode_53', 'opcode_90', 'opcode_91',
     'opcode_0A', 'opcode_61', 'opcode_A1', 'opcode_33', 'opcode_05', 'opcode_2E',
     'opcode_16', 'opcode_1A', 'opcode_1C',
-    'opcode_custom'
+    'opcode_custom', 'opcode_fuzz'
 ]

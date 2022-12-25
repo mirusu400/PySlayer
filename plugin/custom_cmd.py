@@ -1,14 +1,20 @@
+from typing import Union
 from server_packets import opcode_02, opcode_03, opcode_07, opcode_08, opcode_18
 from server_packets import opcode_28, opcode_44, opcode_2E, opcode_14, opcode_3B
 from server_packets import opcode_25, opcode_99, opcode_61, opcode_91, opcode_0A, opcode_1A
-from server_packets import opcode_custom
+from server_packets import opcode_custom, opcode_fuzz
 from client_packets import parse_7E
 from external_proc import *
 from plugin.player import Player
 from plugin.maps import Maps
+import json
+import random
+import time
 
 m = Maps()
-
+fuzz_dict = {}
+with open("fuzz.json", "r", encoding="utf-8") as f:
+    fuzz_dict = json.load(f)
 class Custom_CMD:
     def __init__(self, player=None, connection=None):
         self.player: Player = player
@@ -48,6 +54,12 @@ class Custom_CMD:
                 return None
             except:
                 return None
+        elif cmd == "random":
+            payload = []
+            random.seed(time.time())
+            for i in range(30):
+                payload.append(opcode_fuzz(0x1D, fuzz_dict["0x1D"]))
+            return payload
 
         elif cmd == "getpos":
             return self.get_internal_pos(chat)
@@ -72,7 +84,7 @@ class Custom_CMD:
         
             
     
-    def get_custom_cmd_packet(self, cmd) -> bytes:
+    def get_custom_cmd_packet(self, cmd) -> Union[bytes, None]:
         """
         Getting cmds, return payload(packets)
         """
@@ -112,9 +124,17 @@ class Custom_CMD:
             payload = opcode_0A(chat, username)
         elif cmd == "deathmob":
             item = int(input("mob code?"))
-            return
+            return None
         elif cmd == "mob" or cmd == "getpos":
             return self.get_internal_pos(cmd)
+        elif cmd == "fuzz":
+            opcode = int(input("opcode? (In hex)\n"), 16)
+            if fuzz_dict.get("0x"+format(opcode, '02x').upper()) == None:
+                print("[-] Undefined Opcode")
+                return None
+            payload = opcode_fuzz(opcode, fuzz_dict["0x"+format(opcode, '02x').upper()])
+            return payload
+
         
         elif cmd == "custom":
             try:
