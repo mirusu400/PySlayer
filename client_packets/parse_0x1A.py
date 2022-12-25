@@ -5,6 +5,6 @@ from lib import up32u, up16u, up8u
 # EquipItem
 def parse_1A(payload: bytes):
     assert payload[0] == 0x1a
-    unk1 = up16u(payload[1:2])
-    unk2 = (payload[3])
-    return unk1, unk2
+    room_num = up16u(payload[1:3])
+    room_person_count = payload[3]
+    return room_num, room_person_count
