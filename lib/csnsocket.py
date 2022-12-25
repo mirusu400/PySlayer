@@ -1,3 +1,4 @@
+from typing import Optional, Union
 from .packlib import *
 from _key import xorKey
 import itertools
@@ -24,8 +25,8 @@ class CSNSocket:
         self.recv_seqnum = 0
         self.recv_opcode = 0
         self.recv_hash = 0
-        self.recv_payload = None
-        self.recv_decrypt_payload = None
+        self.recv_payload: Union[bytes, list] = b''
+        self.recv_decrypt_payload: bytes = b''
 
     def build(self, payload):
         p = b""

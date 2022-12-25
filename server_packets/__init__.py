@@ -1021,6 +1021,7 @@ except:
 
 from .opcode_custom import opcode_custom
 
+
 # Load app functions into __all__
 __all__ = [
     'opcode_01', 'opcode_02', 'opcode_03', 'opcode_04', 'opcode_07', 'opcode_08',
@@ -1029,6 +1030,6 @@ __all__ = [
     'opcode_80', 'opcode_D7', 'opcode_AE', 'opcode_99', 'opcode_25', 'opcode_05',
     'opcode_57', 'opcode_42', 'opcode_44', 'opcode_53', 'opcode_90', 'opcode_91',
     'opcode_0A', 'opcode_61', 'opcode_A1', 'opcode_33', 'opcode_05', 'opcode_2E',
-    'opcode_16', 'opcode_1A',
+    'opcode_16', 'opcode_1A', 'opcode_1C',
     'opcode_custom'
 ]

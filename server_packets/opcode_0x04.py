@@ -4,6 +4,7 @@ import sqlite3
 import random
 
 # Ingame Init packet
+# Maybe deprecated? I don't know
 def opcode_04(character_name, job1, job2, _str, _dex, _int, _tol, level,
     hp, mp, equips, apparences, xpos=500, ypos=500) -> bytes:
     

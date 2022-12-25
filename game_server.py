@@ -13,18 +13,20 @@ from plugin.custom_cmd import Custom_CMD
 from plugin.binprint import BinPrint
 from plugin.maps import Maps
 from plugin.ip_connector import Ip_Connector
+from typing import List, Optional
 m = Maps()
 i = Ip_Connector()
 
+
+
 class Game_Tcp_Handler():
     # Every one player for one class
-    def __init__(self, conn, addr):
+    def __init__(self, conn: socket.socket, addr: tuple):
         self.conn = conn
         self.addr = addr
         self.csn_socket = CSNSocket()
         self.db_helper = DBHelper()
         
-        self.player = None
         self.is_listening = True
         self.send_start_packet = False
         print("[+] New connection from", addr[0])
@@ -33,10 +35,10 @@ class Game_Tcp_Handler():
         cinfo = self.db_helper.get_characters(self.index)
         apparences = self.db_helper.get_apparence(self.index)
         equips = self.db_helper.get_equips(self.index)
+
         self.player = Player(cinfo, apparences, equips)
         self.custom_cmd = Custom_CMD(self.player, self)
 
-        m.add_tcp_conntion_to_maps(self)
 
         self.conn.sendall(self.csn_socket.build(self.player.get_welcome_packet()))
 
@@ -94,7 +96,11 @@ class Game_Tcp_Handler():
                 self.conn.sendall(self.csn_socket.build(payload))
             else:
                 payload = opcode_16(self.player.get_username(), text)
-                self.conn.sendall(self.csn_socket.build(payload))
+                broadcast_to_map(self.player.current_map, payload)
+        elif opcode == 0xE: # Create new User
+            parse_0E(csn.recv_decrypt_payload)
+            payload = opcode_1C()
+            self.conn.sendall(self.csn_socket.build(payload))
             
         elif opcode == 0x4: # setStats
             payload = self.player.add_stats(int(csn.recv_decrypt_payload[1]))
@@ -138,6 +144,9 @@ class Game_Tcp_Handler():
 
                 self.player.ip = parse_2B(csn.recv_decrypt_payload)
                 print(f"[+] EnterGame: {self.player.ip}")
+                m.add_tcp_conntion_to_maps(self)
+                broadcast_to_map(self.player.current_map, opcode_05(self), [self])
+                
                 payload = self.player.get_ingame_packet()
                 self.conn.sendall(csn.build(payload))
 
@@ -199,6 +208,9 @@ class Game_Tcp_Handler():
             self.conn.sendall(csn.build(payload))
         else:
             print("[-] Wrong Packet")
+
+
+
 
 
 class Game_Server(Thread):
@@ -271,3 +283,12 @@ class Game_Server(Thread):
         """
         self.sock.close()
         self.is_alive = False
+
+
+def broadcast_to_map(map_id, packet, exclude: Optional[List[Game_Tcp_Handler]] = None):
+    for connection in m.get_tcp_connections_in_map(map_id):
+        if exclude is not None and connection in exclude:
+            continue
+        print(f"send packet to {connection.player.character_name} ({connection.player.uid})")
+        connection.conn.sendall(connection.csn_socket.build(packet))
+    return

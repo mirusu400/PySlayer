@@ -11,14 +11,15 @@ def opcode_07(tcp_connections_list, my_tcp_connections) -> bytes:
     payload = b"\x07"  # opcode 7
     tcp_connection_len = len(tcp_connections_list)
     print(f"[+] Users Count: {tcp_connection_len}")
-    payload += p8u(tcp_connection_len+2)  # Must be >= 1
+    payload += p8u(1)  # Must be >= 1
     payload += get_packets_from_connections(my_tcp_connections, True)
-    for tcp_connections in tcp_connections_list:
-        if tcp_connections == my_tcp_connections:
-            continue
-        payload += get_packets_from_connections(tcp_connections, False)
-    payload += dummy()
-    payload += dummy2()
+    
+    # for tcp_connections in tcp_connections_list:
+    #     if tcp_connections == my_tcp_connections:
+    #         continue
+    #     payload += get_packets_from_connections(tcp_connections, False)
+
+    
     
     print(f"[+] Users: {tcp_connections_list}")
     
@@ -38,7 +39,10 @@ def get_packets_from_connections(tcp_connection, is_my_connection) -> bytes:
         except:
             print(f"[-] Iptable error!, {player.ip}")
             iptables = [127,0,0,1]
-    print(f"[+] Add user: {player.character_name}, {player.uid}")
+        
+    if iptables == [192, 168, 56, 1]:
+        iptables = [192, 168, 1, 59]
+    print(f"[+] Add user: {player.character_name}, {player.uid}, {iptables}")
     payload += pstr(player.character_name, 17)
     payload += p32u(player.uid)  # Unique Character opcode
     payload += p32u(1)
@@ -131,10 +135,10 @@ def get_packets_from_connections(tcp_connection, is_my_connection) -> bytes:
     payload += p8u(1)  # Bool
     payload += p8u(1)
 
-    payload += p32u(iptables[3])
-    payload += p32u(iptables[2])
-    payload += p8u(iptables[1])
-    payload += p32u(iptables[0])
+    payload += p32u(1)
+    payload += p32u(1)
+    payload += p8u(1)
+    payload += p32u(1)
 
     payload += p8u(iptables[3])
     payload += p8u(iptables[2])
@@ -161,7 +165,7 @@ def get_packets_from_connections(tcp_connection, is_my_connection) -> bytes:
 
     # these packets are send on else method..
     if not is_my_connection:
-        chk = 1
+        chk = 0
         payload += p8u(chk) # bool
         if chk:
             payload += p8u(1)
@@ -283,8 +287,8 @@ def dummy2():
     payload += p16u(100) # HP
     payload += p16u(100) # MP
 
-    payload += p32u(1)
-    payload += p8u(1)
+    payload += p32u(0)
+    payload += p8u(0)
 
     # these packets are send on else method..
     payload += p8u(0) # bool
@@ -411,8 +415,8 @@ def dummy():
     payload += p16u(100) # HP
     payload += p16u(100) # MP
 
-    payload += p32u(1)
-    payload += p8u(1)
+    payload += p32u(0)
+    payload += p8u(0)
 
     # these packets are send on else method..
     payload += p8u(0) # bool

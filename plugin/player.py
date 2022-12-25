@@ -1,6 +1,6 @@
 from server_packets import opcode_02, opcode_03, opcode_07, opcode_08, opcode_18
 from server_packets import opcode_28, opcode_44, opcode_2E, opcode_14, opcode_3B
-from server_packets import opcode_25, opcode_1A
+from server_packets import opcode_25, opcode_1A, opcode_05
 from client_packets import parse_7E
 from .maps import Maps
 import json
@@ -104,8 +104,11 @@ class Player():
             print("No mob file found")
             pass
         for idx, mob in enumerate(self.mob_pos_list):
+            print(f"Loading mob {mob['mob_id']} {(self.mob_idx + idx)}")
             ops.append(opcode_1A(mob["mob_id"], (self.mob_idx + idx), mob["xpos"], mob["ypos"]))
         return ops
+    
+
 
     def add_stats(self, stat_type):
         payload = b""
@@ -151,15 +154,22 @@ class Player():
     
     def get_spawn_packet(self, my_tcp_connection):
         # Send opcode 07
+        plist = []
         self.mob_pos_list = []
         tcp_connections_list = m.get_tcp_connections_in_map(self.current_map)
         print(f"[+] TCP Connections in map: {tcp_connections_list}")
         p1 = opcode_07(tcp_connections_list, my_tcp_connection)
+        plist.append(p1)
+        for i in tcp_connections_list:
+            if i == my_tcp_connection:
+                continue
+            tp = opcode_05(i)
+            plist.append(tp)    
         # p2 = opcode_25(300)
-        p3 = self.get_spawn_skills()
-        p4 = self.load_mob()
+        plist.append(self.get_spawn_skills())
+        plist.append(self.load_mob())
 
-        return [p1, p3, p4]
+        return plist
     
     def get_spawn_skills(self) -> bytes:
         payload = []
