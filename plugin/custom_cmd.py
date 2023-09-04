@@ -164,7 +164,7 @@ class Custom_CMD:
         if not (cmd == "mob" or cmd == "getpos"):
             return None
         try:
-            from external_proc import *
+            from external_proc import ExtProcess, PtrType
             with ExtProcess.ctx_open("WindSlayer.exe") as Proc:
                 
                 Position = Proc.make_ptr(0x00572590, PtrType.Uint32)\
