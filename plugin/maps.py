@@ -29,7 +29,8 @@ class Maps:
         return self._maps[map_id]
 
     def change_map(self, connection, before_map_id, after_map_id):
-        self._maps[before_map_id].remove(connection)
+        if connection in self._maps[before_map_id]:
+            self._maps[before_map_id].remove(connection)
         if after_map_id not in self._maps.keys():
             self._maps[after_map_id] = [connection]
         else:

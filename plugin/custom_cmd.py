@@ -4,7 +4,7 @@ from server_packets import opcode_28, opcode_44, opcode_2E, opcode_14, opcode_3B
 from server_packets import opcode_25, opcode_99, opcode_61, opcode_91, opcode_0A, opcode_1A
 from server_packets import opcode_custom, opcode_fuzz
 from client_packets import parse_7E
-from external_proc import *
+
 from plugin.player import Player
 from plugin.maps import Maps
 import json
@@ -23,6 +23,9 @@ class Custom_CMD:
 
     def set_player(self, player):
         self.player = player
+    
+    def set_connection(self, connection):
+        self.connection = connection
 
     def get_chatting_cmd(self, chat) -> bytes:
         cmd = chat.split(" ")[0]
@@ -98,6 +101,7 @@ class Custom_CMD:
         elif cmd == "map":
             payload = []
             map = int(input("map code?"))
+            m.change_map(self.connection, self.player.current_map, map)
             self.player.set_current_map(map, 500, 500)
             payload.append(self.player.get_changemap_packet())
             payload.append(self.player.get_spawn_packet(self.connection))
@@ -160,6 +164,7 @@ class Custom_CMD:
         if not (cmd == "mob" or cmd == "getpos"):
             return None
         try:
+            from external_proc import *
             with ExtProcess.ctx_open("WindSlayer.exe") as Proc:
                 
                 Position = Proc.make_ptr(0x00572590, PtrType.Uint32)\
