@@ -169,6 +169,18 @@ class Game_Tcp_Handler():
 
             payload = opcode_18(item, count)
             self.conn.sendall(csn.build(payload))
+        # elif opcode == 0x38:
+        #     payload_list = []
+        #     payload_list.append(opcode_20(6, 1))
+        #     payload_list.append(opcode_20(8, 2))
+        #     payload_list.append(opcode_20(9, 3))
+        #     payload_list.append(opcode_20(0xA, 4))
+        #     payload_list.append(opcode_20(0xB, 5))
+        #     self.conn.sendall(csn.build(payload_list))
+        elif opcode == 0x39:
+            fight_type = parse_39(csn.recv_decrypt_payload)
+            payload = opcode_20(fight_type, 12 if fight_type < 0xA else 8)
+            self.conn.sendall(csn.build(payload))
         
         elif opcode == 0x0C:  # SellItem
             item, count = parse_0C(csn.recv_decrypt_payload)
@@ -250,6 +262,8 @@ class Game_Server(Thread):
             time_reference = time.time()
             print(f"[+] Game Server Ch1. {time_reference}: {addr} {conn} connected at idx {len(self.client_list) + 1}.")
             tcpsocket = Game_Tcp_Handler(conn, addr)
+            if self.custom_cmd.connection == None:
+                self.custom_cmd.set_connection(tcpsocket)
             self.client_list.append(tcpsocket)
             
             start_new_thread(tcpsocket.handle_client, ())

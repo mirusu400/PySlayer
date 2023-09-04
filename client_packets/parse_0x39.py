@@ -1,4 +1,3 @@
-from lib import CSNSocket
 from lib import up32u, up16u, up8u
 
 # 전장 대기표
