@@ -1,5 +1,6 @@
 import json
 
+
 class Ip_Connector:
     def __new__(cls, *args, **kwargs):
         if not hasattr(cls, "_instance"):

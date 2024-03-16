@@ -7,7 +7,8 @@ import json
 
 m = Maps()
 
-class Player():
+
+class Player:
     def __init__(self, cinfo, apparences, equips):
         self.ip = ""
         self.level = cinfo["level"]
@@ -30,8 +31,16 @@ class Player():
         self.equips = equips[1:]
         self.skills_list = [
             # Default skillsets
-            80, 82, 86, 88, 90, 94, 194, 
-            2175, 2186, 2188
+            80,
+            82,
+            86,
+            88,
+            90,
+            94,
+            194,
+            2175,
+            2186,
+            2188,
         ]
         self.mob_pos_list = []
         self.mob_idx = 0x000F0000
@@ -42,58 +51,59 @@ class Player():
     def set_max_hp(self):
         # hp offset, lev offset, tol offset 순서
         hp_list = []
-        if self.job1 == 1: # 전사
+        if self.job1 == 1:  # 전사
             hp_list = [270, 6, 12]
-        elif self.job1 == 2: # 무도가
+        elif self.job1 == 2:  # 무도가
             hp_list = [220, 5, 12]
-        elif self.job1 == 3: # 궁수
+        elif self.job1 == 3:  # 궁수
             hp_list = [165, 4, 12]
-        elif self.job1 == 4: # 도적
+        elif self.job1 == 4:  # 도적
             hp_list = [165, 3, 13]
-        elif self.job1 == 5: #마법사
+        elif self.job1 == 5:  # 마법사
             hp_list = [110, 6, 14]
-        elif self.job1 == 6: # 사제
+        elif self.job1 == 6:  # 사제
             hp_list = [110, 5, 14]
-        else: #초보여행자
+        else:  # 초보여행자
             hp_list = [110, 2, 10]
         hp_offset, hp_level_offset, hp_tol_offset = hp_list
-        self.max_hp = (self.level * hp_level_offset) + hp_offset + (self.tol * hp_tol_offset)
+        self.max_hp = (
+            (self.level * hp_level_offset) + hp_offset + (self.tol * hp_tol_offset)
+        )
         return
 
     def set_max_mp(self):
         # mp offset, lev offset, int offset 순서
         mp_list = []
-        if self.job1 == 1: # 전사
+        if self.job1 == 1:  # 전사
             mp_list = [110, 1, 9.1]
-        elif self.job1 == 2: # 무도가
+        elif self.job1 == 2:  # 무도가
             mp_list = [80, 1, 9.8]
-        elif self.job1 == 3: # 궁수
+        elif self.job1 == 3:  # 궁수
             mp_list = [122, 1, 9.1]
-        elif self.job1 == 4: # 도적
+        elif self.job1 == 4:  # 도적
             mp_list = [120, 4, 8.4]
-        elif self.job1 == 5: # 마법사
+        elif self.job1 == 5:  # 마법사
             mp_list = [200, 2, 7]
-        elif self.job1 == 6: # 사제
+        elif self.job1 == 6:  # 사제
             mp_list = [200, 2, 7]
-        else: #초보여행자
+        else:  # 초보여행자
             mp_list = [80, 2, 7]
         mp_offset, mp_level_offset, mp_int_offset = mp_list
-        self.max_mp = (self.level * mp_level_offset) + mp_offset + (self.int * mp_int_offset)
+        self.max_mp = (
+            (self.level * mp_level_offset) + mp_offset + (self.int * mp_int_offset)
+        )
         return
 
     def add_mob(self, mob_id, xpos, ypos):
-        self.mob_pos_list.append({
-            "mob_id": mob_id,
-            "xpos": xpos,
-            "ypos": ypos})
+        self.mob_pos_list.append({"mob_id": mob_id, "xpos": xpos, "ypos": ypos})
         self.mob_idx += 0x000F0000 + len(self.mob_pos_list)
         return opcode_1A(mob_id, self.mob_idx, xpos, ypos)
-    
+
     def dump_mob(self):
         with open(f"./maps/{self.current_map}.json", "w", encoding="utf-8") as f:
             json.dump(self.mob_pos_list, f, ensure_ascii=False, indent=4)
         return
-    
+
     def load_mob(self) -> bytes:
         ops = []
         self.mob_pos_list = []
@@ -104,11 +114,11 @@ class Player():
             print("No mob file found")
             pass
         for idx, mob in enumerate(self.mob_pos_list):
-            print(f"Loading mob {mob['mob_id']} {(self.mob_idx + idx)}")
-            ops.append(opcode_1A(mob["mob_id"], (self.mob_idx + idx), mob["xpos"], mob["ypos"]))
+            # print(f"Loading mob {mob['mob_id']} {(self.mob_idx + idx)}")
+            ops.append(
+                opcode_1A(mob["mob_id"], (self.mob_idx + idx), mob["xpos"], mob["ypos"])
+            )
         return ops
-    
-
 
     def add_stats(self, stat_type):
         payload = b""
@@ -137,13 +147,26 @@ class Player():
 
     def get_respawn_packet(self):
         # Send opcode 04
-        return opcode_2E(self.character_name, self.job1, self.job2, self.str, self.dex, self.int, self.tol, self.level,
-            self.hp, self.mp, self.equips, self.apparences, self.xpos, self.ypos)
+        return opcode_2E(
+            self.character_name,
+            self.job1,
+            self.job2,
+            self.str,
+            self.dex,
+            self.int,
+            self.tol,
+            self.level,
+            self.hp,
+            self.mp,
+            self.equips,
+            self.apparences,
+            self.xpos,
+            self.ypos,
+        )
 
     def get_username(self):
         return self.character_name
 
-        
     def get_welcome_packet(self):
         # Send opcode 02
         return opcode_02(self.uid, self.character_name, self.apparences)
@@ -151,7 +174,7 @@ class Player():
     def get_ingame_packet(self):
         # Send opcode 03
         return opcode_03(self)
-    
+
     def get_spawn_packet(self, my_tcp_connection):
         # Send opcode 07
         plist = []
@@ -164,13 +187,13 @@ class Player():
             if i == my_tcp_connection:
                 continue
             tp = opcode_05(i)
-            plist.append(tp)    
+            plist.append(tp)
         # p2 = opcode_25(300)
         plist.append(self.get_spawn_skills())
         plist.append(self.load_mob())
 
         return plist
-    
+
     def get_spawn_skills(self) -> bytes:
         payload = []
         for i in self.skills_list:
@@ -188,12 +211,12 @@ class Player():
         self.current_map = map_code
         self.xpos = xpos
         self.ypos = ypos
-    
+
     def set_delta_hp(self, hp):
         self.hp = min(self.hp + hp, self.max_hp)
         p1 = opcode_28(self.hp)
         return p1
-    
+
     def set_delta_mp(self, mp):
         self.mp = min(self.mp + mp, self.max_mp)
         p1 = opcode_44(self.mp)
@@ -204,4 +227,3 @@ class Player():
 
     def get_equips(self):
         return self.equips
-

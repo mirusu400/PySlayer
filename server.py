@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import os
+
 if not os.path.isfile("./_key.py"):
     print("Please put _key.py in root folder!")
     print("If you don't know what you should do,")
@@ -25,11 +26,11 @@ def main_loop():
     lock = Lock()
     channel_server = Channel_Server(lock)
     game_server = Game_Server(lock)
-    patch_server = Patch_Server(lock)
-    
+    # patch_server = Patch_Server(lock)
+
     channel_server.start()
     game_server.start()
-    patch_server.start()
+    # patch_server.start()
     is_running = True
     print("Single WS1 Emulator Server.")
     print(f"YOUR LOCAL IP: {socket.gethostbyname(socket.gethostname())}")
@@ -51,15 +52,15 @@ def main_loop():
             print("Shutting down  server...")
             channel_server.is_listening = False
             game_server.is_listening = False
-            patch_server.is_listening = False
-            
+            # patch_server.is_listening = False
+
             is_running = False
         if cmd == "quit" or cmd == "exit" or cmd == "q":
             print("Shutting down  server...")
             channel_server.is_listening = False
             game_server.is_listening = False
-            patch_server.is_listening = False
-            
+            # patch_server.is_listening = False
+
             is_running = False
         elif cmd == "reset":
             print("Resetting server...")
@@ -73,10 +74,6 @@ def main_loop():
 
     channel_server.join()
     game_server.join()
-
-
-
-
 
 
 if __name__ == "__main__":
@@ -98,5 +95,5 @@ if __name__ == "__main__":
     #                     default="3")
 
     # args = parser.parse_args()
-    
+
     main_loop()

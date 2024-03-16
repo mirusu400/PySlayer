@@ -6,8 +6,9 @@ from lib import CSNSocket
 from lib import p8, p16, p32, p64
 from server_packets import *
 
+
 class Channel_Server(Thread):
-    def __init__(self, lock, tcp_port = 7011):
+    def __init__(self, lock, tcp_port=7011):
         """
         Create a new tcp server
         """
@@ -21,9 +22,8 @@ class Channel_Server(Thread):
         """
         Start tcp server
         """
-        self.sock = socket.socket(socket.AF_INET,
-                                  socket.SOCK_STREAM)
-        self.sock.bind(('0.0.0.0', self.tcp_port))
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.bind(("0.0.0.0", self.tcp_port))
         self.sock.setblocking(0)
         self.sock.settimeout(1)
         time_reference = time.time()
@@ -40,12 +40,11 @@ class Channel_Server(Thread):
             payload = opcode_01()
             # print(conn.recv(1024))
             conn.sendall(csnsocket.build(payload))
-            
+
             conn.close()
         print("[-] Channel server Closed")
         self.stop()
 
-        
     def stop(self):
         """
         Stop tcp data

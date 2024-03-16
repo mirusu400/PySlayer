@@ -4,6 +4,8 @@ from _key import xorKey
 import itertools
 import struct
 import binascii
+
+
 def flatten(l):
     out = []
     for item in l:
@@ -12,6 +14,7 @@ def flatten(l):
         else:
             out.append(item)
     return out
+
 
 class CSNSocket:
     def __init__(self):
@@ -25,12 +28,12 @@ class CSNSocket:
         self.recv_seqnum = 0
         self.recv_opcode = 0
         self.recv_hash = 0
-        self.recv_payload: Union[bytes, list] = b''
-        self.recv_decrypt_payload: bytes = b''
+        self.recv_payload: Union[bytes, list] = b""
+        self.recv_decrypt_payload: bytes = b""
 
     def build(self, payload):
         p = b""
-        
+
         if payload == None or len(payload) == 0:
             return p
         elif type(payload) == bytes:
@@ -38,7 +41,7 @@ class CSNSocket:
             p += p32(self.send_packet_length)
             p += p32(self.send_hash)  # hash
             p += self.send_payload
-            
+
         elif type(payload) == list:
             payload = flatten(payload)
             for i in range(len(payload)):
@@ -50,18 +53,18 @@ class CSNSocket:
                     p += p32(self.send_hash)
                     p += self.send_payload
         return p
-    
 
     def inject_payload(self, payload):
         self.send_seqnum = (self.send_seqnum + 1) & 0xFF
         self.send_payload = payload
-        self.send_packet_length = (
-            ((len(payload) + 8) & 0x3FFF) | self.send_seqnum << 12)
+        self.send_packet_length = ((len(payload) + 8) & 0x3FFF) | self.send_seqnum << 12
         return payload
 
     def printheader(self):
         try:
-            print(f"[*] length: {self.recv_packet_length}\topcode: {self.recv_opcode}\thash: {self.recv_hash}\tseqnum: {self.recv_seqnum}\txorkey: {(xorKey[4 * ((self.recv_seqnum +0xF) & 0xFF)])}")
+            print(
+                f"[*] length: {self.recv_packet_length}\topcode: {hex(self.recv_opcode)}\thash: {self.recv_hash}\tseqnum: {self.recv_seqnum}\txorkey: {(xorKey[4 * ((self.recv_seqnum +0xF) & 0xFF)])}"
+            )
         except:
             pass
         return
@@ -95,8 +98,10 @@ class CSNSocket:
         # For decrypt payload faster, I use array.
         dec = []
         for i in range(0, len(self.recv_decrypt_payload)):
-            dec.append(self.recv_decrypt_payload[i] ^ (
-                xorKey[4 * ((self.recv_seqnum + 0xF) & 0xFF)]))
+            dec.append(
+                self.recv_decrypt_payload[i]
+                ^ (xorKey[4 * ((self.recv_seqnum + 0xF) & 0xFF)])
+            )
 
         self.recv_decrypt_payload = bytes(dec)
         self.recv_opcode = self.recv_decrypt_payload[0]
