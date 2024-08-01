@@ -7,39 +7,37 @@ import random
 
 
 def opcode_07(tcp_connections_list, my_tcp_connections) -> bytes:
-    
+
     payload = b"\x07"  # opcode 7
     tcp_connection_len = len(tcp_connections_list)
     print(f"[+] Users Count: {tcp_connection_len}")
     payload += p8u(1)  # Must be >= 1
     payload += get_packets_from_connections(my_tcp_connections, True)
-    
+
     # for tcp_connections in tcp_connections_list:
     #     if tcp_connections == my_tcp_connections:
     #         continue
     #     payload += get_packets_from_connections(tcp_connections, False)
 
-    
-    
     print(f"[+] Users: {tcp_connections_list}")
-    
+
     # payload += dummy()
     return payload
 
 
 def get_packets_from_connections(tcp_connection, is_my_connection) -> bytes:
-    payload = b''
+    payload = b""
     player = tcp_connection.player
     iptables = []
     if player.ip is None:
-        iptables = [0,0,0,0]
+        iptables = [0, 0, 0, 0]
     else:
         try:
-            iptables = list(map(int, player.ip.split('.')))
+            iptables = list(map(int, player.ip.split(".")))
         except:
             print(f"[-] Iptable error!, {player.ip}")
-            iptables = [127,0,0,1]
-        
+            iptables = [127, 0, 0, 1]
+
     if iptables == [192, 168, 56, 1]:
         iptables = [192, 168, 1, 59]
     print(f"[+] Add user: {player.character_name}, {player.uid}, {iptables}")
@@ -58,8 +56,6 @@ def get_packets_from_connections(tcp_connection, is_my_connection) -> bytes:
     # payload += pstr("MyGuild", 17)
     # payload += p16u(0)
     # payload += p16u(0)
-
-    
 
     # if >= 4, send packet below:
     # {
@@ -87,11 +83,11 @@ def get_packets_from_connections(tcp_connection, is_my_connection) -> bytes:
     # payload += p16u(0)
 
     # === end if
-    payload += p8u(player.job1) # 1차 전직
-    payload += p8u(player.job2) # 2차 전직
+    payload += p8u(player.job1)  # 1차 전직
+    payload += p8u(player.job2)  # 2차 전직
     # payload += p16u(12)
     payload += p8u(player.level)  # Level
-    payload += p8u(20) # 계급
+    payload += p8u(20)  # 계급
 
     payload += p8u(0)
 
@@ -105,14 +101,14 @@ def get_packets_from_connections(tcp_connection, is_my_connection) -> bytes:
 
     for i in player.equips:  # Equip (loop 15)
         payload += p16u(i)
-        for j in range(0, 6): # Equip enchant
+        for j in range(0, 6):  # Equip enchant
             payload += p16u(0)
     # line 1874
 
-    for i in range(0, 10): # Cash Equip
-        payload += p16(0) # Item Id
-        payload += p16(0)   # 속성부여아이템 ID
-        payload += p16(0)   # 속성부여아이템 ID
+    for i in range(0, 10):  # Cash Equip
+        payload += p16(0)  # Item Id
+        payload += p16(0)  # 속성부여아이템 ID
+        payload += p16(0)  # 속성부여아이템 ID
 
     # line 1886
     payload += p8u(0)
@@ -121,17 +117,15 @@ def get_packets_from_connections(tcp_connection, is_my_connection) -> bytes:
     #     payload += p16u(1)
     # print(x, y)
 
-    payload += p8u(0) # For loop below
+    payload += p8u(0)  # For loop below
     # ??
     # for i in range(0, 10):
-    # payload += p16(1) 
-
-
+    # payload += p16(1)
 
     payload += pf64(player.xpos)
     payload += pf64(player.ypos)
 
-    payload += p32u(0) # Initial action
+    payload += p32u(0)  # Initial action
     payload += p8u(1)  # Bool
     payload += p8u(1)
 
@@ -158,7 +152,7 @@ def get_packets_from_connections(tcp_connection, is_my_connection) -> bytes:
     payload += p8u(1)  # Bool
 
     payload += p16u(player.hp)  # HP
-    payload += p16u(player.mp) # MP
+    payload += p16u(player.mp)  # MP
 
     payload += p32u(0)
     payload += p8u(1)
@@ -166,13 +160,11 @@ def get_packets_from_connections(tcp_connection, is_my_connection) -> bytes:
     # these packets are send on else method..
     if not is_my_connection:
         chk = 0
-        payload += p8u(chk) # bool
+        payload += p8u(chk)  # bool
         if chk:
             payload += p8u(1)
             payload += pstr("123456789", 13)  # 13 bytes
     return payload
-
-
 
 
 def dummy2():
@@ -191,8 +183,6 @@ def dummy2():
     # payload += pstr("MyGuild", 17)
     # payload += p16u(0)
     # payload += p16u(0)
-
-    
 
     # if >= 4, send packet below:
     # {
@@ -223,15 +213,33 @@ def dummy2():
     # 4 == 도적 ( 2 == 트랩퍼)
     # 5 == 마법사
     # 6 == 사제
-    payload += p8u(4) # 1차 전직
-    payload += p8u(2) # 2차 전직
+    payload += p8u(4)  # 1차 전직
+    payload += p8u(2)  # 2차 전직
     # payload += p16u(12)
     payload += p8u(10)  # Level
-    payload += p8u(20) # 계급
+    payload += p8u(20)  # 계급
 
     payload += p8u(30)  # 성별?
 
-    for i in [0, 123, 0, 0, 125, 113, 110, 0, 116, 131, 0, 10, 0, 701, 701, 701, 701]:  # 외형 (loop 17)
+    for i in [
+        0,
+        123,
+        0,
+        0,
+        125,
+        113,
+        110,
+        0,
+        116,
+        131,
+        0,
+        10,
+        0,
+        701,
+        701,
+        701,
+        701,
+    ]:  # 외형 (loop 17)
         payload += p16u(i)
 
     payload += p16u(1)  # 힘
@@ -239,16 +247,32 @@ def dummy2():
     payload += p16u(1)  # 지혜
     payload += p16u(1)  # 근성
 
-    for i in [100, 100, 100, 100, 101, 3020, 100, 100, 100, 100, 100, 100, 100, 100, 100]:  # Equip (loop 15)
+    for i in [
+        100,
+        100,
+        100,
+        100,
+        101,
+        3020,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+    ]:  # Equip (loop 15)
         payload += p16u(i)
-        for j in range(0, 6): # Equip enchant
+        for j in range(0, 6):  # Equip enchant
             payload += p16u(0)
     # line 1874
 
-    for i in range(0, 10): # Cash Equip
-        payload += p16(0) # Item Id
-        payload += p16(0)   # 속성부여아이템 ID
-        payload += p16(0)   # 속성부여아이템 ID
+    for i in range(0, 10):  # Cash Equip
+        payload += p16(0)  # Item Id
+        payload += p16(0)  # 속성부여아이템 ID
+        payload += p16(0)  # 속성부여아이템 ID
 
     # line 1886
     payload += p8u(0)
@@ -284,14 +308,14 @@ def dummy2():
     payload += p8u(0)  # Bool
     payload += p8u(1)  # Bool
 
-    payload += p16u(100) # HP
-    payload += p16u(100) # MP
+    payload += p16u(100)  # HP
+    payload += p16u(100)  # MP
 
     payload += p32u(0)
     payload += p8u(0)
 
     # these packets are send on else method..
-    payload += p8u(0) # bool
+    payload += p8u(0)  # bool
     # payload += p8u(1)
     # payload += pstr("123456789", 13)  # 13 bytes
     # payload += p8u(1)
@@ -319,8 +343,6 @@ def dummy():
     # payload += pstr("MyGuild", 17)
     # payload += p16u(0)
     # payload += p16u(0)
-
-    
 
     # if >= 4, send packet below:
     # {
@@ -351,15 +373,33 @@ def dummy():
     # 4 == 도적 ( 2 == 트랩퍼)
     # 5 == 마법사
     # 6 == 사제
-    payload += p8u(4) # 1차 전직
-    payload += p8u(2) # 2차 전직
+    payload += p8u(4)  # 1차 전직
+    payload += p8u(2)  # 2차 전직
     # payload += p16u(12)
     payload += p8u(10)  # Level
-    payload += p8u(20) # 계급
+    payload += p8u(20)  # 계급
 
     payload += p8u(30)  # 성별?
 
-    for i in [0, 123, 0, 0, 125, 113, 110, 0, 116, 131, 0, 10, 0, 701, 701, 701, 701]:  # 외형 (loop 17)
+    for i in [
+        0,
+        123,
+        0,
+        0,
+        125,
+        113,
+        110,
+        0,
+        116,
+        131,
+        0,
+        10,
+        0,
+        701,
+        701,
+        701,
+        701,
+    ]:  # 외형 (loop 17)
         payload += p16u(i)
 
     payload += p16u(1)  # 힘
@@ -367,16 +407,32 @@ def dummy():
     payload += p16u(1)  # 지혜
     payload += p16u(1)  # 근성
 
-    for i in [100, 100, 100, 100, 101, 3020, 100, 100, 100, 100, 100, 100, 100, 100, 100]:  # Equip (loop 15)
+    for i in [
+        100,
+        100,
+        100,
+        100,
+        101,
+        3020,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+    ]:  # Equip (loop 15)
         payload += p16u(i)
-        for j in range(0, 6): # Equip enchant
+        for j in range(0, 6):  # Equip enchant
             payload += p16u(0)
     # line 1874
 
-    for i in range(0, 10): # Cash Equip
-        payload += p16(0) # Item Id
-        payload += p16(0)   # 속성부여아이템 ID
-        payload += p16(0)   # 속성부여아이템 ID
+    for i in range(0, 10):  # Cash Equip
+        payload += p16(0)  # Item Id
+        payload += p16(0)  # 속성부여아이템 ID
+        payload += p16(0)  # 속성부여아이템 ID
 
     # line 1886
     payload += p8u(0)
@@ -412,14 +468,14 @@ def dummy():
     payload += p8u(0)  # Bool
     payload += p8u(1)  # Bool
 
-    payload += p16u(100) # HP
-    payload += p16u(100) # MP
+    payload += p16u(100)  # HP
+    payload += p16u(100)  # MP
 
     payload += p32u(0)
     payload += p8u(0)
 
     # these packets are send on else method..
-    payload += p8u(0) # bool
+    payload += p8u(0)  # bool
     # payload += p8u(1)
     # payload += pstr("123456789", 13)  # 13 bytes
     # payload += p8u(1)

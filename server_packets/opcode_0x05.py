@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import List, TYPE_CHECKING
+
 if TYPE_CHECKING:
     from game_server import Game_Tcp_Handler
 from lib import CSNSocket
@@ -7,18 +8,19 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 import sqlite3
 import random
 
+
 # Ingame Init packet
 def opcode_05(tcp_connection: Game_Tcp_Handler) -> bytes:
     player = tcp_connection.player
     iptables = []
     if player.ip is None:
-        iptables = [0,0,0,0]
+        iptables = [0, 0, 0, 0]
     else:
         try:
-            iptables = list(map(int, player.ip.split('.')))
+            iptables = list(map(int, player.ip.split(".")))
         except:
             print(f"[-] Iptable error!, {player.ip}")
-            iptables = [127,0,0,1]
+            iptables = [127, 0, 0, 1]
     payload = b"\x05"  # opcode 5
     payload += pstr(player.character_name, 17)
     payload += p32u(player.uid)  # Must be 2
@@ -35,8 +37,6 @@ def opcode_05(tcp_connection: Game_Tcp_Handler) -> bytes:
     # payload += pstr("MyGuild", 17)
     # payload += p16u(0)
     # payload += p16u(0)
-
-    
 
     # if >= 4, send packet below:
     # {
@@ -67,11 +67,11 @@ def opcode_05(tcp_connection: Game_Tcp_Handler) -> bytes:
     # 4 == 도적 ( 2 == 트랩퍼)
     # 5 == 마법사
     # 6 == 사제
-    payload += p8u(player.job1) # 1차 전직
-    payload += p8u(player.job2) # 2차 전직
+    payload += p8u(player.job1)  # 1차 전직
+    payload += p8u(player.job2)  # 2차 전직
     # payload += p16u(12)
     payload += p8u(player.level)  # Level
-    payload += p8u(20) # 계급
+    payload += p8u(20)  # 계급
 
     payload += p8u(0)  # Bool
 
@@ -85,14 +85,14 @@ def opcode_05(tcp_connection: Game_Tcp_Handler) -> bytes:
 
     for i in player.equips:  # Equip (loop 15)
         payload += p16u(i)
-        for j in range(0, 6): # Equip enchant
+        for j in range(0, 6):  # Equip enchant
             payload += p16u(0)
     # line 1874
 
-    for i in range(0, 10): # Cash Equip
-        payload += p16(0) # Item Id
-        payload += p16(0)   # 속성부여아이템 ID
-        payload += p16(0)   # 속성부여아이템 ID
+    for i in range(0, 10):  # Cash Equip
+        payload += p16(0)  # Item Id
+        payload += p16(0)  # 속성부여아이템 ID
+        payload += p16(0)  # 속성부여아이템 ID
 
     payload += p8u(0)
     # Buff things
@@ -100,15 +100,15 @@ def opcode_05(tcp_connection: Game_Tcp_Handler) -> bytes:
     #     payload += p16u(1)
     # print(x, y)
 
-    payload += p8u(0) # For loop below
+    payload += p8u(0)  # For loop below
     # ??
     # for i in range(0, 10):
-    # payload += p16(1) 
+    # payload += p16(1)
 
     payload += pf64(player.xpos)
     payload += pf64(player.ypos)
 
-    payload += p32u(0) # Initial action
+    payload += p32u(0)  # Initial action
     payload += p8u(1)  # Bool
     payload += p8u(1)
 
@@ -135,11 +135,11 @@ def opcode_05(tcp_connection: Game_Tcp_Handler) -> bytes:
     payload += p8u(1)  # Bool
 
     payload += p16u(player.hp)  # HP
-    payload += p16u(player.mp) # MP
+    payload += p16u(player.mp)  # MP
 
     payload += p32u(700)
     payload += p8u(30)
 
     # these packets are send on else method..
-    payload += p8u(0) # bool
+    payload += p8u(0)  # bool
     return payload

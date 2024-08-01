@@ -1,11 +1,12 @@
 from lib import CSNSocket
 from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 
+
 # 캐릭터선택창 패킷
 def opcode_02(uid, character_name, apparences):
     payload = b"\x02"
     payload += p8u(1)  # Must be 1
-    payload += p32u(uid) # Character UID (Same as opcode_07)
+    payload += p32u(uid)  # Character UID (Same as opcode_07)
     payload += p8u(100)
     payload += p8u(101)
     payload += p32u(123123)
@@ -14,7 +15,7 @@ def opcode_02(uid, character_name, apparences):
     payload += p8u(1)  # len of characters
 
     for i in range(1):
-        payload += pstr(character_name, 17) # Size 17
+        payload += pstr(character_name, 17)  # Size 17
         payload += p8u(20)  # Bool (Must be zero)
         payload += p8u(1)
         payload += p8u(2)  # Job

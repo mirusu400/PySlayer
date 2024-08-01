@@ -1,6 +1,7 @@
 from lib import CSNSocket
 from lib import up32u, up16u, up8u
 
+
 # UseItem
 # Ex. Potion, Skill, etc..
 def parse_15(payload: bytes):

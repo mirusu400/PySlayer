@@ -1021,6 +1021,15 @@ except:
 
 # Load app functions into __all__
 __all__ = [
-    'parse_0D', 'parse_7E', 'parse_0B', 'parse_0C', 'parse_2C', 'parse_1A',
-    'parse_15', 'parse_03', 'parse_2B', 'parse_0E', 'parse_39',
+    "parse_0D",
+    "parse_7E",
+    "parse_0B",
+    "parse_0C",
+    "parse_2C",
+    "parse_1A",
+    "parse_15",
+    "parse_03",
+    "parse_2B",
+    "parse_0E",
+    "parse_39",
 ]

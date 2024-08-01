@@ -3,6 +3,7 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 
 import random
 
+
 # About chat?
 def opcode_90(idx=0):
     payload = b"\x90"  # opcode 0x42

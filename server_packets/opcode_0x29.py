@@ -3,6 +3,7 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 
 import random
 
+
 # ??
 def opcode_29():
 
@@ -14,5 +15,5 @@ def opcode_29():
     payload += p32u(random.randint(0, r1))  # ??
     payload += p32u(random.randint(0, r2))  # ??
     payload += p32u(random.randint(0, r3))  # ??
-    
+
     return payload

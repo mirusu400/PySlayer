@@ -4,7 +4,6 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 import random
 
 
-
 def opcode_03(player) -> bytes:
     payload = b"\x03"
     x = random.randint(65535, 210000000)
@@ -23,17 +22,17 @@ def opcode_03(player) -> bytes:
     payload += p32u(8)  # 전장 Down
 
     payload += p8u(0)  # Bool
-    
+
     payload += p32u(x)
-    payload += pstr("미루나무", 17) # Mentor name
+    payload += pstr("미루나무", 17)  # Mentor name
     payload += p8u(y)  # var_y
     payload += p8u(10)
 
     # 최대 진행가능 퀘스트 == 5?
     for i in range(0, 5):
-        payload += p16u(10+i)  # quest?
+        payload += p16u(10 + i)  # quest?
     for i in range(0, 5):
-        payload += p8u(10+i)
+        payload += p8u(10 + i)
 
     payload += p8u(35)  # 장비칸 개수
     payload += p8u(35)  # 소비칸 개수
@@ -41,9 +40,9 @@ def opcode_03(player) -> bytes:
 
     payload += p8u(15)  # End Quest?
 
-    for i in range(0, 15): # End Quest Count
-        payload += p16u(i) # Quest ID
-        payload += p8u(1) # 퀘스트 완료횟수
+    for i in range(0, 15):  # End Quest Count
+        payload += p16u(i)  # Quest ID
+        payload += p8u(1)  # 퀘스트 완료횟수
 
     # Equipment
     payload += p8u(0)
@@ -51,9 +50,9 @@ def opcode_03(player) -> bytes:
     for i in range(0):
         payload += p16u(i)
         payload += p8u(5)
-        for j in range(5): #enchant
-            payload += p16u(j+10)
-        payload += p16u(i+10)
+        for j in range(5):  # enchant
+            payload += p16u(j + 10)
+        payload += p16u(i + 10)
 
     payload += p8u(0)
     # for i in [80, 82, 86, 88, 90, 94, 0x15B]:

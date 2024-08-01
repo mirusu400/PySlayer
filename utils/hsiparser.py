@@ -1,10 +1,13 @@
 import json
+
+
 def find_nth(haystack, needle, n):
     start = haystack.find(needle)
     while start >= 0 and n > 1:
-        start = haystack.find(needle, start+len(needle))
+        start = haystack.find(needle, start + len(needle))
         n -= 1
     return start
+
 
 def parse_hsi_to_dict(items):
     images_datas = []
@@ -39,7 +42,7 @@ def parse_hsi_to_dict(items):
                 if mode == "str":
                     if line[start] == ":":
                         mode = "key"
-                    else: 
+                    else:
                         temp_key += line[start]
                 else:
                     if line[start] == " ":
@@ -47,7 +50,9 @@ def parse_hsi_to_dict(items):
                             data["idx"] = idx
                             data[temp_key.strip()] = temp_value.strip()
                             break
-                        elif (ord("A") <= ord(line[start+1]) and ord(line[start+1]) <= ord("z")) :
+                        elif ord("A") <= ord(line[start + 1]) and ord(
+                            line[start + 1]
+                        ) <= ord("z"):
                             mode = "str"
                             data["idx"] = idx
                             data[temp_key.strip()] = temp_value.strip()
@@ -74,6 +79,3 @@ if __name__ == "__main__":
         json.dump(images, f, ensure_ascii=False, indent=4)
     with open("./sprites.json", "w", encoding="utf-8") as f:
         json.dump(sprites, f, ensure_ascii=False, indent=4)
-
-        
-

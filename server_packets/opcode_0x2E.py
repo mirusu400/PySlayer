@@ -3,10 +3,25 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 import sqlite3
 import random
 
+
 # CharacterReset?
-def opcode_2E(character_name, job1, job2, _str, _dex, _int, _tol, level,
-    hp, mp, equips, apparences, xpos=500, ypos=500) -> bytes:
-    
+def opcode_2E(
+    character_name,
+    job1,
+    job2,
+    _str,
+    _dex,
+    _int,
+    _tol,
+    level,
+    hp,
+    mp,
+    equips,
+    apparences,
+    xpos=500,
+    ypos=500,
+) -> bytes:
+
     payload = b"\x2B"  # opcode 2E
     v802 = 1
     payload += p8u(v802)  # Must be >= 1
@@ -27,8 +42,6 @@ def opcode_2E(character_name, job1, job2, _str, _dex, _int, _tol, level,
         # payload += p16u(0)
         # payload += p16u(0)
 
-        
-
         # if >= 4, send packet below:
         # {
         #   16 str
@@ -43,11 +56,11 @@ def opcode_2E(character_name, job1, job2, _str, _dex, _int, _tol, level,
         # 4 == 도적 ( 2 == 트랩퍼)
         # 5 == 마법사
         # 6 == 사제
-        payload += p8u(job1) # 1차 전직
-        payload += p8u(job2) # 2차 전직
+        payload += p8u(job1)  # 1차 전직
+        payload += p8u(job2)  # 2차 전직
         # payload += p16u(12)
         payload += p8u(level)  # Level
-        payload += p8u(20) # 계급
+        payload += p8u(20)  # 계급
 
         payload += p8u(1)  # Bool
 
@@ -63,33 +76,33 @@ def opcode_2E(character_name, job1, job2, _str, _dex, _int, _tol, level,
 
         for i in equips:  # Equip (loop 15)
             payload += p16u(i)
-            for j in range(0, 6): # Equip enchant
+            for j in range(0, 6):  # Equip enchant
                 payload += p16u(0)
         # line 1874
 
-        for i in range(0, 10): # Cash Equip
-            payload += p16(100) # Item Id
-            payload += p16(1)   # 속성부여아이템 ID
-            payload += p16(1)   # 속성부여아이템 ID
+        for i in range(0, 10):  # Cash Equip
+            payload += p16(100)  # Item Id
+            payload += p16(1)  # 속성부여아이템 ID
+            payload += p16(1)  # 속성부여아이템 ID
 
         # line 4188
         payload += p8u(0)
         # Buff things
         # for i in [88, 90, 94, 0x15B]:
         #     payload += p16u(1)
-        
+
         # 4225
-        payload += p8u(0) # Something
-    
+        payload += p8u(0)  # Something
+
         payload += p8u(1)
         payload += p8u(2)
         payload += p8u(3)
         payload += p32u(100)
 
         # Else method
-        payload += p8u(0) # Bool
+        payload += p8u(0)  # Bool
         payload += p8(1)
-        payload += pstr("test",13)
+        payload += pstr("test", 13)
         # for i in range(0,8000):
         #     payload += p8u(i % 0xFF)
     return payload

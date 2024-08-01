@@ -10,10 +10,10 @@ def opcode_2F():
     payload += p8u(201)
     payload += p8u(201)
     payload += p16u(201)
-    payload += pstr("test",16)
-    
+    payload += pstr("test", 16)
+
     payload += p16u(201)  # Mapcode
-    
+
     for i in range(9):
         payload += p8u(1)
     return payload

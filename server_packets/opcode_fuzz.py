@@ -4,10 +4,11 @@ import string
 import random
 import time
 from copy import deepcopy
+
+
 # Fuzz the opcode
 def opcode_fuzz(opcode, payload_dict: dict):
-    
-    
+
     types = payload_dict["types"]
     defaults = deepcopy(payload_dict["default"])
     payload = b""
@@ -15,7 +16,9 @@ def opcode_fuzz(opcode, payload_dict: dict):
     random.randint(0, 255)
     for i in range(len(defaults)):
         if "-" in defaults[i]:
-            defaults[i] = random.randint(int(defaults[i].split("-")[0]), int(defaults[i].split("-")[1]))
+            defaults[i] = random.randint(
+                int(defaults[i].split("-")[0]), int(defaults[i].split("-")[1])
+            )
         if defaults[i] == "rand":
             if "p8" in types[i]:
                 if "u" in types[i]:
@@ -36,17 +39,22 @@ def opcode_fuzz(opcode, payload_dict: dict):
                 if "u" in types[i]:
                     defaults[i] = random.randint(0, 18446744073709551615)
                 else:
-                    defaults[i] = random.randint(-9223372036854775808, 9223372036854775807)
+                    defaults[i] = random.randint(
+                        -9223372036854775808, 9223372036854775807
+                    )
             elif "pf32" in types[i]:
                 defaults[i] = random.uniform(-2147483648, 2147483647)
             elif "pf64" in types[i]:
                 defaults[i] = random.uniform(-9223372036854775808, 9223372036854775807)
-    
+
             elif types[i].startswith("pstr"):
                 data = types[i]
                 length = int(data[i].split("(")[1].split(")")[0])
                 # get random string
-                tstr = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length-1))
+                tstr = "".join(
+                    random.choice(string.ascii_uppercase + string.digits)
+                    for _ in range(length - 1)
+                )
                 payload += pstr(tstr, length)
         else:
             defaults[i] = int(defaults[i])

@@ -1,7 +1,9 @@
 from __future__ import annotations
 from typing import List, TYPE_CHECKING
+
 if TYPE_CHECKING:
     from game_server import Game_Tcp_Handler
+
 
 class Maps:
     def __new__(cls, *args, **kwargs):
@@ -15,11 +17,11 @@ class Maps:
             print("maps :: __init__ is called")
             self._maps = {}
 
-    def add_tcp_conntion_to_maps(self, connection: Game_Tcp_Handler, map_id = None):
+    def add_tcp_conntion_to_maps(self, connection: Game_Tcp_Handler, map_id=None):
         if map_id is None:
             map_id = connection.player.current_map
         print(f"[+] {connection} is added to map {map_id}")
-        
+
         if map_id not in self._maps.keys():
             self._maps[map_id] = [connection]
         else:
@@ -35,5 +37,3 @@ class Maps:
             self._maps[after_map_id] = [connection]
         else:
             self._maps[after_map_id].append(connection)
-
-            

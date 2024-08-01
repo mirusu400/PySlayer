@@ -1,6 +1,6 @@
 import sys
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     key = b""
     xorkey = "xorKey = [\n"
     file = ""
@@ -9,7 +9,7 @@ if __name__ == '__main__':
         file = input()
     else:
         file = sys.argv[1]
-    with open(file, 'rb') as f:
+    with open(file, "rb") as f:
         f.seek(0x1E170)
         key = f.read(1024)
 

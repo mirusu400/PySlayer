@@ -14,11 +14,12 @@
 # Written by mirusu400
 import zipfile
 import sys
+from tqdm import tqdm
 
 
 def decode(payload):
     p = []
-    for idx in range(0,len(payload)):
+    for idx in range(0, len(payload)):
         if idx % 3 == 1:
             dec = (payload[idx] + 0xDD + 1) & 0xFF
         elif idx % 3 == 2:
@@ -29,11 +30,10 @@ def decode(payload):
     return bytes(p)
 
 
-if __name__ == "__main__":
-    filename = sys.argv[1]
+def decrypt(filename):
 
     if "hsc" in filename:
-        myzip_r = zipfile.ZipFile(filename, 'r')
+        myzip_r = zipfile.ZipFile(filename, "r")
         temp_file = myzip_r.read("temp_file")
         tp2 = decode(temp_file)
         with open(f"{filename}.dds", "wb") as f:
@@ -43,4 +43,13 @@ if __name__ == "__main__":
             payload = f.read()
             payload = decode(payload)
         with open(f"{filename}.out", "wb") as f:
-            f.write(payload)  
+            f.write(payload)
+
+
+if __name__ == "__main__":
+    import os
+
+    # walk all file
+    for root, dirs, files in os.walk("./hs"):
+        for file in tqdm(files):
+            decrypt(os.path.join(root, file))
