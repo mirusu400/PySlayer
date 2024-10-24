@@ -8,7 +8,10 @@ import random
 def opcode_14(uid, type, value):
     payload = b"\x14"  # opcode 0x14
     # p32 p8 p16
-    payload += p32u(uid)  # Character UID
+    payload += p32u(uid)  # Character UID?
+
+    # Type of stat
+    # 0, 1, 2, 3
     payload += p8u(type)
-    payload += p16u(value)  # Bool, 1
+    payload += p16u(value)
     return payload

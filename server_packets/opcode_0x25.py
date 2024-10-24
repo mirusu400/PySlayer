@@ -4,8 +4,8 @@ from lib import p8, p16, p32, p64, p8u, p16u, p32u, p64u, pf32, pf64, pstr
 import random
 
 
-#
-def opcode_25(skill: int, x=random.randint(0, 0xFFFFFFFF), y=random.randint(0, 0xFFFF)):
+# 개인상점? 아이템사용? 스킬사용?
+def opcode_25(skill: int):
 
     payload = b"\x25"
     payload += p16u(skill)

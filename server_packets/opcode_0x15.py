@@ -19,6 +19,7 @@ def opcode_15(chat_type: int, string1: str, string2: str):
         payload += p8u(length)
         payload += pstr(string1, length)
     else:
+        # [%s] 길드와 [%s] <- 이거읟 ㅜ string
         payload += pstr(string1, 17)
         payload += pstr(string2, 17)
     return payload

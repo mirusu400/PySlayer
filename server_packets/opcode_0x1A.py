@@ -11,12 +11,13 @@ def opcode_1A(npccode, mob_uid, xpos=-1, ypos=-1) -> bytes:
     ypos = ypos if ypos != -1 else float(input("ypos?"))
     _xpos = int(xpos)
     _ypos = int(ypos)
-    v669 = 1
+    v689 = 1
     uid = mob_uid
     # xpos = 398
     # ypos = 450
-    payload += p8u(v669)  # Must be >= 1
-    for i in range(v669):
+    # Mob 개수
+    payload += p8u(v689)
+    for i in range(v689):
         payload += p32u(npccode)
         payload += p32u(uid)  # player uid
 
