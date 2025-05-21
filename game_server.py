@@ -83,29 +83,40 @@ class Game_Tcp_Handler:
             b.print()
 
         opcode = csn.recv_opcode
-        if opcode == 0xD:  # MoveandSaveCharacter
+        # MoveandSaveCharacter
+        if opcode == 0xD:  
             parse_0D(csn.recv_decrypt_payload)
             # csn.printdata()
             pass
             # print(f"[+] MoveandSaveCharacter: {xpos}, {ypos}")
-        elif opcode == 0x3:  # chatting
+
+        # User chatting
+        elif opcode == 0x3:
+
             length, text = parse_03(csn.recv_decrypt_payload)
             print(f"[+] User chatting: {text}")
             if text[0] == "/":
+                # Process Command
                 payload = self.custom_cmd.get_chatting_cmd(text[1:])
                 self.conn.sendall(self.csn_socket.build(payload))
             else:
+                # Normal Chatting; broadcast to map
                 payload = opcode_16(self.player.get_username(), text)
                 broadcast_to_map(self.player.current_map, payload)
-        elif opcode == 0x4:  # setStats
+        
+        # Addin stats
+        elif opcode == 0x4:
             payload = self.player.add_stats(int(csn.recv_decrypt_payload[1]))
             self.conn.sendall(self.csn_socket.build(payload))
-        elif opcode == 0xE:  # Create new User
+        
+        # TODO: Create new User
+        elif opcode == 0xE:
             parse_0E(csn.recv_decrypt_payload)
             payload = opcode_1C()
             self.conn.sendall(self.csn_socket.build(payload))
 
-        elif opcode == 0x15:  # UseItemorSkill
+        # ConsumeItemOrSkill
+        elif opcode == 0x15:
             item = parse_15(csn.recv_decrypt_payload)
             item_info = self.db_helper.get_item_info(item)
             print(f"[+] UseItemorSkill: {item}, {item_info['name']}")
@@ -157,7 +168,8 @@ class Game_Tcp_Handler:
 
                 self.send_start_packet = True
 
-        elif opcode == 0x0B:  # BuyItemOrSckill
+        # BuyItemOrSckill
+        elif opcode == 0x0B:  
             item, count = parse_0B(csn.recv_decrypt_payload)
             item_info = self.db_helper.get_item_info(item)
 
@@ -179,12 +191,14 @@ class Game_Tcp_Handler:
             payload = opcode_20(fight_type, 12 if fight_type < 0xA else 8)
             self.conn.sendall(csn.build(payload))
 
-        elif opcode == 0x0C:  # SellItem
+        # SellItem
+        elif opcode == 0x0C:  
             item, count = parse_0C(csn.recv_decrypt_payload)
             payload = opcode_19(item, count)
             self.conn.sendall(csn.build(payload))
 
-        elif opcode == 0x2C:  # GetListOfRooms
+        # GetListOfRooms
+        elif opcode == 0x2C:
             code = parse_2C(csn.recv_decrypt_payload)
             if code == 0x01:
                 payload = opcode_33()
@@ -194,13 +208,16 @@ class Game_Tcp_Handler:
                 self.conn.sendall(csn.build(payload))
             else:
                 print(f"[-] GetListOfRooms: Unknown code {code}")
+        
+        # TODO: Equip Item
         elif opcode == 0x1A:
             unk1, unk2 = parse_1A(csn.recv_decrypt_payload)
             # payload = opcode_34()
             # self.conn.sendall(csn.build(payload))
 
+        # ChangeMap
         elif opcode == 0x7E:
-            # ChangeMap
+            
             map_file_code, xpos, ypos = parse_7E(
                 csn.recv_decrypt_payload, self.player.current_map, self.db_helper
             )
